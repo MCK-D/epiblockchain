@@ -1,0 +1,205 @@
+.lease-section {
+  margin-top: 31px;
+}
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 23px;
+}
+h2 {
+  font-size: 17px;
+  font-weight: 550;
+  margin: 0;
+}
+.section-heading h2 span {
+  font-size: 10px;
+  font-weight: 400;
+  color: #94a17f;
+  border: 1px solid #dfe7d1;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.section-heading p {
+  font-size: 10px;
+  color: #a4ae94;
+  margin: 7px 0 0;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.filters {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.filters button {
+  padding: 8px 10px;
+  font-size: 10px;
+  background: transparent;
+  color: #9ba68c;
+  border-radius: 5px;
+}
+.filters .chosen {
+  background: #eaf0df;
+  color: #6b864f;
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: white;
+  border: 1px solid #e1e8d4;
+  padding: 8px 11px;
+  border-radius: 5px;
+  color: #a6b292;
+}
+.search input {
+  border: 0;
+  background: transparent;
+  width: 135px;
+  font-size: 10px;
+  color: #6d8257;
+}
+.table-scroll {
+  overflow: auto;
+  border: 1px solid #e2e8d7;
+  border-radius: 8px;
+  background: white;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+th {
+  background: #f5f8ef;
+  padding: 14px 20px;
+  font-size: 8px;
+  letter-spacing: 1px;
+  font-weight: 500;
+  color: #a0ad8d;
+}
+td {
+  padding: 21px 20px;
+  border-top: 1px solid #edf1e5;
+  font-size: 11px;
+}
+td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+td strong {
+  font-size: 11px;
+  font-weight: 550;
+}
+td small {
+  display: block;
+  font-size: 9px;
+  color: #a6b194;
+  margin-top: 7px;
+}
+td small span {
+  margin: 0 4px;
+  color: #c6cfb7;
+}
+tbody tr {
+  cursor: pointer;
+}
+tbody tr:hover {
+  background: #fafcf6;
+}
+.property-icon {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 42px;
+  border: 1px solid #e0e7d3;
+  background: #edf1e4;
+  border-radius: 7px;
+  color: #90a476;
+}
+.p1 {
+  background: #f2ede2;
+  color: #ac9c75;
+  border-color: #ebe3cf;
+}
+.p2 {
+  background: #e8efea;
+  color: #8aa58f;
+  border-color: #dce7dc;
+}
+.p3 {
+  background: #eeebf2;
+  color: #a798b3;
+  border-color: #e4deec;
+}
+.amount {
+  font-weight: 500;
+  font-size: 12px;
+}
+.amount small {
+  font-weight: 400;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: #eef4e4;
+  color: #89a56a;
+  font-size: 9px;
+  border-radius: 4px;
+}
+.badge > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status-réclamation {
+  background: #f8f1df;
+  color: #b29a5f;
+}
+.status-litige {
+  background: #f8ebe3;
+  color: #b78c72;
+}
+.status-clôturé,
+.status-annulé {
+  background: #f0f3eb;
+  color: #9ba98b;
+}
+.status-proposé {
+  background: #edf0f8;
+  color: #8c9db8;
+}
+.date {
+  color: #9aa98a;
+  font-size: 10px;
+}
+.row-arrow {
+  background: transparent;
+  color: #95a780;
+  padding: 5px;
+}
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 2px;
+  color: #a8b399;
+  font-size: 9px;
+}
+.table-footer > span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

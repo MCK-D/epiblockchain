@@ -16,7 +16,7 @@ npm run build   # TypeScript puis build Vite dans dist/
 npm run preview
 ```
 
-Stack : React 19, TypeScript, Vite 7, Tailwind CSS 4, Motion et Lucide. `src/main.tsx` contient les écrans et transitions simulées ; `src/style.css` contient le thème responsive et importe Tailwind via son plugin Vite.
+Stack : React 19, TypeScript, Vite 7, Tailwind CSS 4, Motion et Lucide. `src/main.tsx` monte l’application ; `src/App.tsx` assemble les composants. Les styles importent Tailwind via son plugin Vite.
 
 ## Parcours
 
@@ -40,3 +40,27 @@ Stack : React 19, TypeScript, Vite 7, Tailwind CSS 4, Motion et Lucide. `src/mai
 Les rôles ne sont pas authentifiés, les délais ne sont pas exécutés automatiquement, et les justificatifs sont fictifs. Les adresses saisies lors de la création servent à valider le formulaire, sans être stockées ni utilisées comme autorisation. Les adresses du propriétaire et du contrat ne sont pas encore modélisées. Les actions de dépassement de délai restent à intégrer avec le contrat final. Le prototype ne constitue pas une implémentation financière ni une preuve de décentralisation.
 
 L’intégration future pourra utiliser wagmi et viem sur **Base Sepolia uniquement**, avec des états explicites de connexion, lecture, signature, confirmation et erreur. Aucun secret n’est nécessaire au frontend de démonstration.
+
+## Organisation du frontend
+
+```text
+src/
+├── main.tsx                 # Point d’entrée React
+├── App.tsx                  # Assemblage de l’interface et des modales
+├── components/
+│   ├── layout/              # Navigation, en-tête, rôle, pied de page
+│   ├── dashboard/           # Indicateurs et alerte de réclamation
+│   ├── leases/              # Liste, ligne, création, détail et actions
+│   ├── help/                # Explication du fonctionnement
+│   └── ui/                  # Modale et notification réutilisables
+├── hooks/                   # État de démonstration et notifications
+├── services/                # Accès au stockage local des baux
+├── data/                    # Jeu de données de démonstration
+├── types/                   # Types partagés : bail, rôle, état et page
+├── utils/                   # Formatage des dates et montants
+└── styles/                  # Base, layout, composants et responsive
+```
+
+Les composants reçoivent des propriétés typées et ne lisent pas directement le stockage, hormis la commande explicite de réinitialisation qui passe par le service. `useDemoApp` centralise les transitions simulées ; `leaseStorage` isole leur persistance pour préparer une future source de données. Les champs temporaires des formulaires d’actions restent dans `LeaseActions`. `useNotification` gère la durée des notifications et nettoie son minuteur au démontage.
+
+Pour faire évoluer un écran, modifier son composant et sa feuille de style dédiée. Pour modifier une transition de démonstration, intervenir dans `hooks/useDemoApp.ts`. Pour changer les exemples, modifier `data/demoLeases.ts`. Les composants `Modal` et `Toast` restent indépendants du domaine locatif.
