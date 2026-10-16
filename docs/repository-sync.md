@@ -14,6 +14,12 @@ from running in the organization repository.
    **Contents: Read and write** and **Workflows: Read and write**. The workflow
    file itself is copied, so Workflows access is required. Complete any required
    organization approval. The token owner must have write access.
+   If fine-grained tokens are unavailable but organization policy permits classic
+   tokens, use a classic token with `repo` and `workflow` scopes and explicitly
+   authorize it for the organization under **Configure SSO**. Blocking GitHub App
+   authorization does not establish whether personal tokens are permitted; an
+   organization administrator must approve an allowed credential if both are
+   restricted.
 2. In the personal repository, open **Settings → Secrets and variables →
    Actions** and add a repository secret named `ORG_MIRROR_TOKEN`.
    Never commit the token or paste it into chat.
