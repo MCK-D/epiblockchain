@@ -1,9 +1,9 @@
 import { WalletControls } from "../wallet/WalletControls";
 import { Menu } from "lucide-react";
-import useAppDemoContext from "../../contexts/AppDemoContext";
+import useAppContext from "../../contexts/AppContext";
 
 export function Header() {
-  const { mobile, setMobile, page } = useAppDemoContext();
+  const { mobile, setMobile, page } = useAppContext();
   return (
     <header>
       <button
@@ -20,7 +20,7 @@ export function Header() {
         <b>{page}</b>
       </div>
       <div className="header-right">
-        <span className="demo-pill">Mode démonstration</span>
+        <span className="testnet-pill">Testnet</span>
         <WalletControls />
       </div>
     </header>

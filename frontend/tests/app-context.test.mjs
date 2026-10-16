@@ -11,8 +11,8 @@ const server = await createServer({
 });
 after(() => server.close());
 
-const { default: useAppDemoContext, AppDemoContextProvider } =
-  await server.ssrLoadModule("/src/contexts/AppDemoContext.tsx");
+const { default: useAppContext, AppContextProvider } =
+  await server.ssrLoadModule("/src/contexts/AppContext.tsx");
 
 const { WalletProvider } = await server.ssrLoadModule(
   "/src/providers/WalletProvider.tsx",
@@ -22,31 +22,31 @@ const { walletErrorMessage } = await server.ssrLoadModule(
   "/src/utils/walletErrors.ts",
 );
 
-function CurrentRole() {
-  const { role } = useAppDemoContext();
-  return createElement("span", null, role);
+function CurrentPage() {
+  const { page } = useAppContext();
+  return createElement("span", null, page);
 }
 
 test("using the context without its provider reports the required provider", () => {
   assert.throws(
-    () => renderToString(createElement(CurrentRole)),
-    /useAppDemoContext must be used within AppDemoContextProvider/,
+    () => renderToString(createElement(CurrentPage)),
+    /useAppContext must be used within AppContextProvider/,
   );
 });
 
-test("the provider makes shared demo state available to nested children", () => {
+test("the provider makes shared UI state available to nested children", () => {
   const html = renderToString(
     createElement(
       WalletProvider,
       null,
       createElement(
-        AppDemoContextProvider,
+        AppContextProvider,
         null,
-        createElement("section", null, createElement(CurrentRole)),
+        createElement("section", null, createElement(CurrentPage)),
       ),
     ),
   );
-  assert.equal(html, "<section><span>Locataire</span></section>");
+  assert.equal(html, "<section><span>Vue d’ensemble</span></section>");
 });
 
 test("wallet rejection and pending errors are readable even when nested", () => {

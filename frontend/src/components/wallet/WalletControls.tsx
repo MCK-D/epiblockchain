@@ -121,8 +121,9 @@ export function WalletControls() {
                 : "Connecter un portefeuille"}
             </h2>
             <p>
-              La connexion est réelle. Les baux et leurs actions restent simulés
-              : aucune signature ni transaction n’est demandée.
+              La connexion est réelle. Les opérations des baux ne sont pas
+              encore disponibles. Aucune signature ni transaction n’est
+              demandée.
             </p>
             {connection.isConnected && address ? (
               <>

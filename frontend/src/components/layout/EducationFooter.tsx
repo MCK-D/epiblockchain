@@ -1,4 +1,4 @@
-import useAppDemoContext from "../../contexts/AppDemoContext";
+import useAppContext from "../../contexts/AppContext";
 
 const rules = [
   {
@@ -16,7 +16,7 @@ const rules = [
 ];
 
 export function EducationFooter() {
-  const { setHelp } = useAppDemoContext();
+  const { setHelp } = useAppContext();
   return (
     <>
       <section className="rules" aria-labelledby="rules-title">
