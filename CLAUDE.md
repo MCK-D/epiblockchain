@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-"Caution" is a rental security-deposit escrow dApp (EPITECH blockchain module, "escrow" subject). The Hardhat contract project is freshly initialized; the frontend is still a **simulated demo** (no contract, RPC or real transaction; the wallet button connects a fake account). Planned integration: wagmi + viem on **Base Sepolia only**. Stack rules: Hardhat 3 (not 2), viem (not ethers), `node:test` + `node:assert/strict` (not Mocha/Chai), Ignition for deployments. The contract must have no owner, pause, upgrade or emergency withdrawal.
+"Caution" is a rental security-deposit escrow dApp (EPITECH blockchain module, "escrow" subject). The contract skeleton `contracts/RentalDeposit.sol` exists (types, immutable windows, events, custom errors, `withdraw`, shared helpers `_getLease` / `_requireStatus` / `_credit`); lease transitions still `revert NotImplemented()` and are implemented per team part (1: create/cancel/fund, 2: claims, timeouts, withdraw, 3: dispute/resolve). Time-window convention: an in-window action is allowed while `block.timestamp <= deadline`, the matching `...AfterTimeout` only when `block.timestamp > deadline`; the frontend is still a **simulated demo** (no contract, RPC or real transaction; the wallet button connects a fake account). Planned integration: wagmi + viem on **Base Sepolia only**. Stack rules: Hardhat 3 (not 2), viem (not ethers), `node:test` + `node:assert/strict` (not Mocha/Chai), Ignition for deployments. The contract must have no owner, pause, upgrade or emergency withdrawal.
 
 All user-facing text, domain types (`Status`, `Role`, `Page` string unions), and the README are in French. Keep new UI strings in French and reuse the existing union literals exactly (they include typographic apostrophes, e.g. `"Vue d’ensemble"`).
 
 ## Layout
 
 Two independent npm projects:
-- **Root**: Hardhat 3 (template `node-test-runner-viem`) — `contracts/` (Solidity, plus Foundry-style `*.t.sol` tests), `test/` (TypeScript tests with `node:test` + viem), `ignition/modules/` (deployments; `ignition/deployments/` is committed), `scripts/`, `hardhat.config.ts`. The `Counter` files are template placeholders to replace with the lease contract.
+- **Root**: Hardhat 3 (template `node-test-runner-viem`) — `contracts/` (Solidity, plus Foundry-style `*.t.sol` tests), `test/` (TypeScript tests with `node:test` + viem), `ignition/modules/` (deployments; `ignition/deployments/` is committed), `scripts/`, `hardhat.config.ts`.
 - **`frontend/`**: the React demo described below, with its own `package.json`, `tsconfig.json` and `node_modules`. The root `tsconfig.json` excludes it.
 
 ## Commands
@@ -23,10 +23,10 @@ Node.js 22.13+.
 npm ci                      # .npmrc sets allow-git=root: forge-std is a GitHub dependency
 npx hardhat compile
 npx hardhat test            # Solidity + node:test suites
-npx hardhat test nodejs test/Counter.ts   # single TypeScript test file
+npx hardhat test nodejs test/RentalDeposit.ts   # single TypeScript test file
 npx hardhat test solidity                  # Solidity tests only
 npx tsc --noEmit            # type check scripts/tests/config
-npx hardhat ignition deploy ignition/modules/<Module>.ts --network baseSepolia --verify
+npx hardhat ignition deploy ignition/modules/RentalDeposit.ts --network baseSepolia --parameters ignition/parameters/demo.json --verify   # demo delays (120 s); defaults are production delays
 
 # Frontend
 cd frontend
