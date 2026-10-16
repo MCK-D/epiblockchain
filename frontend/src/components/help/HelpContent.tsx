@@ -15,17 +15,17 @@ export function HelpContent({ setLeases, setBalance, notify, setHelp }: Props) {
       </p>
       {[
         [
-          "01",
+          "1",
           "Un bail, trois rôles",
           "Le propriétaire définit le bail, le locataire verse la caution et un arbitre distinct est désigné.",
         ],
         [
-          "02",
+          "2",
           "Des fonds encadrés",
           "Après la fin du bail, une réclamation peut être déposée pendant 60 jours. La part non réclamée revient immédiatement au locataire.",
         ],
         [
-          "03",
+          "3",
           "Le droit de contester",
           "Le locataire dispose de 14 jours pour répondre. L’arbitre dispose ensuite de 30 jours pour répartir uniquement la somme contestée.",
         ],
@@ -39,9 +39,9 @@ export function HelpContent({ setLeases, setBalance, notify, setHelp }: Props) {
         </div>
       ))}
       <p className="notice">
-        Le système conserve une confiance dans l’arbitre, les justificatifs et
-        le réseau Base. Les délais et l’arbitre silencieux restent des choix à
-        valider dans le contrat final.
+        Si l’arbitre ne tranche pas à temps, le montant contesté revient au
+        locataire. Il reste une part de confiance : l’arbitre, la véracité des
+        justificatifs et le réseau Base.
       </p>
       <button
         className="text-button"

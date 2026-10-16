@@ -6,10 +6,11 @@ export function RoleSwitcher({ role, setRole, setPage }: Props) {
   return (
     <div className="role-row">
       <span>Voir en tant que</span>
-      <div className="segmented">
+      <div className="segmented" role="group" aria-label="Rôle affiché">
         {(["Locataire", "Propriétaire", "Arbitre"] as Role[]).map((r) => (
           <button
             className={r === role ? "selected" : ""}
+            aria-pressed={r === role}
             key={r}
             onClick={() => {
               setRole(r);
@@ -20,9 +21,6 @@ export function RoleSwitcher({ role, setRole, setPage }: Props) {
           </button>
         ))}
       </div>
-      <span className="simulation-note">
-        Données fictives · aucune transaction réelle
-      </span>
     </div>
   );
 }

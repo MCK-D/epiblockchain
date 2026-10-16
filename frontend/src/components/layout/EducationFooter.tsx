@@ -1,50 +1,47 @@
-import { ArrowUpRight, Leaf } from "lucide-react";
-import React from "react";
 import type { DemoApp } from "../../hooks/useDemoApp";
+
+const rules = [
+  {
+    title: "La caution est bloquée",
+    text: "Le locataire verse le montant exact. Pendant le bail, personne ne peut le déplacer.",
+  },
+  {
+    title: "Le propriétaire réclame sur justificatifs",
+    text: "Après la fin du bail, il a 60 jours. La part non réclamée revient tout de suite au locataire.",
+  },
+  {
+    title: "Seul le désaccord va à l’arbitre",
+    text: "Le locataire a 14 jours pour contester. L’arbitre ne répartit que la somme contestée.",
+  },
+];
 
 type Props = Pick<DemoApp, "setHelp">;
 export function EducationFooter({ setHelp }: Props) {
   return (
     <>
-      <div className="bottom-grid">
-        <div className="explain">
-          <div className="explain-icon">
-            <Leaf size={24} />
-          </div>
-          <div>
-            <h3>Votre caution suit des règles. Pas des promesses.</h3>
-            <p>
-              Les fonds sont bloqués pendant le bail. En cas de désaccord, seul
-              le montant contesté est soumis à un arbitre.
-            </p>
-            <button className="text-button" onClick={() => setHelp(true)}>
-              Découvrir le fonctionnement <ArrowUpRight size={14} />
-            </button>
-          </div>
+      <section className="rules" aria-labelledby="rules-title">
+        <div className="rules-intro">
+          <h2 id="rules-title">Des règles, pas des promesses.</h2>
+          <p>
+            Chaque délai expiré peut être déclenché par n’importe qui. Le
+            silence ne profite jamais à celui qui se tait.
+          </p>
+          <button className="text-button" onClick={() => setHelp(true)}>
+            Comprendre Caution
+          </button>
         </div>
-        <div className="steps">
-          <span className="eyebrow">UN PARCOURS TRANSPARENT</span>
-          <div>
-            {["Créez le bail", "Déposez la caution", "Récupérez vos fonds"].map(
-              (s, i) => (
-                <React.Fragment key={s}>
-                  <div>
-                    <span>{i + 1}</span>
-                    <small>{s}</small>
-                  </div>
-                  {i < 2 && <span className="step-line" />}
-                </React.Fragment>
-              ),
-            )}
-          </div>
-        </div>
-      </div>
+        <ol>
+          {rules.map((rule) => (
+            <li key={rule.title}>
+              <h3>{rule.title}</h3>
+              <p>{rule.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
       <footer>
         <span>© 2026 Caution. La confiance, par contrat.</span>
-        <span>
-          <span className="mini-dot" />
-          Prototype sur Base Sepolia · ETH de test uniquement
-        </span>
+        <span>Prototype sur Base Sepolia, ETH de test uniquement</span>
       </footer>
     </>
   );

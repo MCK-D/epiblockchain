@@ -1,37 +1,155 @@
 :root {
-  font-family: Inter, "Segoe UI", sans-serif;
-  color: #253c2f;
-  background: #f8f9f5;
-  font-size: 14px;
+  color-scheme: light dark;
+
+  /* Surfaces */
+  --bg: #f2f4ee;
+  --surface: #fcfdfa;
+  --surface-soft: #f5f7f1;
+  --line: #d9e0d1;
+  --line-soft: #e7ece1;
+
+  /* Text */
+  --ink: #16231b;
+  --ink-soft: #34443a;
+  --muted: #56665a;
+  --placeholder: #66756a;
+
+  /* Single accent: forest green */
+  --accent: #1d3a2a;
+  --accent-hover: #284d38;
+  --on-accent: #f2f7ee;
+  --accent-soft: #e3ecd9;
+  --accent-ink: #1d3a2a;
+  --leaf: #7fa866;
+
+  /* Lease states (semantic, not decorative) */
+  --active: #2f6b43;
+  --active-bg: #e3f0e3;
+  --proposed: #34507a;
+  --proposed-bg: #e4ebf5;
+  --claimed: #7a4f0e;
+  --claimed-strong: #5e3c08;
+  --claimed-bg: #fbefd6;
+  --claimed-line: #efd9a8;
+  --claimed-seg: #c58b2c;
+  --disputed: #993a22;
+  --disputed-bg: #f8e4dc;
+  --closed: #56665a;
+  --closed-bg: #eceee8;
+
+  --shadow: 0 30px 80px rgb(15 29 21 / 0.25);
+  --scrim: rgb(15 29 21 / 0.6);
+
+  /* Shape rule: panels 12px, controls 8px, chips and badges full pill. */
+  --r-panel: 12px;
+  --r-control: 8px;
+  --r-pill: 999px;
+
+  --sans: "Geist Variable", system-ui, sans-serif;
+
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1511;
+    --surface: #151e18;
+    --surface-soft: #1a251e;
+    --line: #2b3a31;
+    --line-soft: #223029;
+
+    --ink: #e6ede4;
+    --ink-soft: #c3cfc4;
+    --muted: #97a69b;
+    --placeholder: #8a998e;
+
+    --accent: #a3cc8f;
+    --accent-hover: #b6d9a5;
+    --on-accent: #0e1511;
+    --accent-soft: #243a2c;
+    --accent-ink: #b3d8a1;
+    --leaf: #6e9a5a;
+
+    --active: #8fd1a0;
+    --active-bg: #1c3325;
+    --proposed: #a4bde8;
+    --proposed-bg: #1e2a3d;
+    --claimed: #e9b964;
+    --claimed-strong: #f4d496;
+    --claimed-bg: #33270f;
+    --claimed-line: #4f3d17;
+    --claimed-seg: #d69d3c;
+    --disputed: #f19a80;
+    --disputed-bg: #3a1f18;
+    --closed: #a3b0a6;
+    --closed-bg: #232d27;
+
+    --shadow: 0 30px 80px rgb(0 0 0 / 0.5);
+    --scrim: rgb(5 10 7 / 0.7);
+  }
 }
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
+  background: var(--bg);
 }
 button,
 input {
   font: inherit;
+  color: inherit;
 }
 button {
   cursor: pointer;
   border: 0;
-  transition: background 0.2s;
+  background: none;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
-button:hover {
-  filter: brightness(0.96);
+button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: default;
 }
 button:focus-visible,
-a:focus-visible {
-  outline: 3px solid #9cba7f;
-  outline-offset: 3px;
+a:focus-visible,
+input:focus-visible,
+tr:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
 }
 a {
   color: inherit;
   text-decoration: none;
+}
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+p {
+  margin: 0;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
