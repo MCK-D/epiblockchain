@@ -34,7 +34,7 @@ npx hardhat test nodejs test/RentalDeposit.ts   # un seul fichier de test TypeSc
 npx hardhat test solidity                 # tests Solidity uniquement
 ```
 
-Le fichier `.npmrc` de la racine contient `allow-git=root` : npm 12 refuse par défaut les dépendances git, or `forge-std` (bibliothèque des tests Solidity) est installé depuis GitHub.
+`forge-std` est téléchargé depuis l’archive HTTPS officielle du commit `bf647bd6046f2f7da30d0c2bf435e5c76a780c1b` (v1.16.2). Le lockfile fixe son intégrité. Cette référence conserve la version attendue et évite le refus des dépendances Git par npm en mode `allow-git=root`.
 
 ### Secrets et déploiement
 
@@ -138,3 +138,22 @@ function DemoWallet() {
 ```
 
 Depuis `frontend/`, `npm test` vérifie la garde du hook et l’accès au contexte depuis les descendants du provider.
+
+## Commandes depuis la racine
+
+Les dépendances des contrats restent dans `package.json` à la racine ; React, Vite, Tailwind et Motion restent dans `frontend/package.json`. Elles ne sont pas dupliquées entre les projets.
+
+```sh
+npm ci                   # dépendances Hardhat
+npm run install:frontend # dépendances frontend avec son lockfile
+npm run dev              # serveur Vite
+npm run build            # vérification TypeScript et build frontend
+npm run preview          # prévisualisation du build frontend
+npm run compile          # compilation des contrats
+npm run node             # réseau Hardhat local
+npm run check            # types des contrats puis build frontend
+npm test                 # tests frontend puis tests Hardhat
+npm run test:frontend    # tests frontend uniquement
+npm run test:contracts   # tests Hardhat uniquement
+npm run format:check     # contrôle du format frontend
+```

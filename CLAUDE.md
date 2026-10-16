@@ -20,7 +20,7 @@ Node.js 22.13+.
 
 ```sh
 # Contracts (repo root)
-npm ci                      # .npmrc sets allow-git=root: forge-std is a GitHub dependency
+npm ci                      # forge-std uses an official HTTPS archive pinned to its original commit
 npx hardhat compile
 npx hardhat test            # Solidity + node:test suites
 npx hardhat test nodejs test/RentalDeposit.ts   # single TypeScript test file
