@@ -1,3 +1,5 @@
+import { useConnection } from "wagmi";
+import { baseSepolia } from "wagmi/chains";
 import {
   createContext,
   useContext,
@@ -20,7 +22,7 @@ export type AppDemoContextProps = {
   role: Role;
   setRole: Dispatch<SetStateAction<Role>>;
   connected: boolean;
-  setConnected: Dispatch<SetStateAction<boolean>>;
+  onSupportedChain: boolean;
   query: string;
   setQuery: Dispatch<SetStateAction<string>>;
   filter: LeaseFilter;
@@ -68,7 +70,8 @@ export const AppDemoContextProvider = ({
   const { toast, setToast, notify } = useNotification();
   const [page, setPage] = useState<Page>("Vue d’ensemble");
   const [role, setRole] = useState<Role>("Locataire");
-  const [connected, setConnected] = useState(false);
+  const { isConnected: connected, chainId } = useConnection();
+  const onSupportedChain = chainId === baseSepolia.id;
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<LeaseFilter>("Tous les baux");
   const [selected, setSelected] = useState<Lease | null>(null);
@@ -95,7 +98,11 @@ export const AppDemoContextProvider = ({
   function act(status: Status, label: string, credit = 0, claimAmount = 0) {
     if (!selected) return;
     if (!connected) {
-      notify("Connectez le portefeuille de démonstration pour continuer.");
+      notify("Connectez votre portefeuille pour continuer.");
+      return;
+    }
+    if (!onSupportedChain) {
+      notify("Passez sur Base Sepolia dans le menu du portefeuille.");
       return;
     }
     const updated = {
@@ -118,7 +125,7 @@ export const AppDemoContextProvider = ({
     role,
     setRole,
     connected,
-    setConnected,
+    onSupportedChain,
     query,
     setQuery,
     filter,
