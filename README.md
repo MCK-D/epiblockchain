@@ -4,19 +4,27 @@ Prototype français d’une application de dépôt de garantie locative. **Front
 
 ## Démarrer
 
-Node.js 22.12+ ou 24 recommandé.
+Node.js 22.13+ ou 24 recommandé. Le dépôt contient deux projets npm indépendants : les contrats (Hardhat 3, à la racine) et le frontend (`frontend/`).
+
+Contrats :
 
 ```sh
 npm ci
-npm run dev
+npx hardhat compile
+npx hardhat test
 ```
 
+Frontend :
+
 ```sh
-npm run build   # TypeScript puis build Vite dans dist/
+cd frontend
+npm ci
+npm run dev
+npm run build   # TypeScript puis build Vite dans frontend/dist/
 npm run preview
 ```
 
-Stack : React 19, TypeScript, Vite 7, Tailwind CSS 4, Motion et Lucide. `src/main.tsx` monte l’application ; `src/App.tsx` assemble les composants. Les styles importent Tailwind via son plugin Vite.
+Stack frontend : React 19, TypeScript, Vite 7, Tailwind CSS 4, Motion et Lucide. `src/main.tsx` monte l’application ; `src/App.tsx` assemble les composants. Les styles importent Tailwind via son plugin Vite.
 
 ## Parcours
 
@@ -44,7 +52,7 @@ L’intégration future pourra utiliser wagmi et viem sur **Base Sepolia uniquem
 ## Organisation du frontend
 
 ```text
-src/
+frontend/src/
 ├── main.tsx                 # Point d’entrée React
 ├── App.tsx                  # Assemblage de l’interface et des modales
 ├── components/

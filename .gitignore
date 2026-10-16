@@ -1,7 +1,20 @@
+# Node modules
 node_modules/
-dist/
-*.local
-.env*
-!.env.example
 
+# Build output
+dist/
 *.tsbuildinfo
+
+# Hardhat build artifacts and caches
+/artifacts
+/cache
+/types
+/coverage
+/.gas-snapshot
+/snapshots
+
+# Local files and environment (secrets go in the Hardhat keystore)
+*.local
+.env
+.env.*
+!.env.example
