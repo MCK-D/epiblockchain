@@ -1,8 +1,8 @@
 import { ArrowRight, Clock3 } from "lucide-react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 
-type Props = Pick<DemoApp, "leases" | "setSelected">;
-export function ClaimNotice({ leases, setSelected }: Props) {
+export function ClaimNotice() {
+  const { leases, setSelected } = useAppDemoContext();
   return (
     <div className="attention">
       <div className="attention-icon">

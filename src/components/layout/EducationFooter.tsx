@@ -1,9 +1,9 @@
 import { ArrowUpRight, Leaf } from "lucide-react";
 import React from "react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 
-type Props = Pick<DemoApp, "setHelp">;
-export function EducationFooter({ setHelp }: Props) {
+export function EducationFooter() {
+  const { setHelp } = useAppDemoContext();
   return (
     <>
       <div className="bottom-grid">

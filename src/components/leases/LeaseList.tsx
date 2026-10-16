@@ -1,28 +1,19 @@
 import { ArrowRight, Search, ShieldCheck } from "lucide-react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
+import type { LeaseFilter } from "../../types/lease";
 import { LeaseRow } from "./LeaseRow";
 
-type Props = Pick<
-  DemoApp,
-  | "leases"
-  | "filter"
-  | "setFilter"
-  | "page"
-  | "setPage"
-  | "query"
-  | "setQuery"
-  | "setSelected"
->;
-export function LeaseList({
-  leases,
-  filter,
-  setFilter,
-  page,
-  setPage,
-  query,
-  setQuery,
-  setSelected,
-}: Props) {
+export function LeaseList() {
+  const {
+    leases,
+    filter,
+    setFilter,
+    page,
+    setPage,
+    query,
+    setQuery,
+    setSelected,
+  } = useAppDemoContext();
   const shown = leases.filter(
     (l) =>
       (filter === "Tous les baux" || l.status === filter) &&
@@ -51,14 +42,16 @@ export function LeaseList({
       </div>
       <div className="toolbar">
         <div className="filters">
-          {[
-            "Tous les baux",
-            "Actif",
-            "Proposé",
-            "Réclamation",
-            "Litige",
-            "Clôturé",
-          ].map((f) => (
+          {(
+            [
+              "Tous les baux",
+              "Actif",
+              "Proposé",
+              "Réclamation",
+              "Litige",
+              "Clôturé",
+            ] satisfies LeaseFilter[]
+          ).map((f) => (
             <button
               key={f}
               className={filter === f ? "chosen" : ""}

@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "format": "prettier --write src README.md *.json vite.config.ts",
-    "format:check": "prettier --check src README.md *.json vite.config.ts"
+    "format:check": "prettier --check src README.md *.json vite.config.ts",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

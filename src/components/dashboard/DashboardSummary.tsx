@@ -1,19 +1,11 @@
 import { ArrowDownLeft, ArrowRight, FileText, ShieldCheck } from "lucide-react";
 import { motion } from "motion/react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 import { eth } from "../../utils/format";
 
-type Props = Pick<
-  DemoApp,
-  "leases" | "balance" | "connected" | "setBalance" | "notify"
->;
-export function DashboardSummary({
-  leases,
-  balance,
-  connected,
-  setBalance,
-  notify,
-}: Props) {
+export function DashboardSummary() {
+  const { leases, balance, connected, setBalance, notify } =
+    useAppDemoContext();
   const locked = leases
     .filter((l) => ["Actif", "Litige", "Réclamation"].includes(l.status))
     .reduce(
