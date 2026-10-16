@@ -19,7 +19,7 @@ const heldLabel: Partial<Record<Lease["status"], string>> = {
 };
 
 export function DashboardSummary() {
-  const { leases, balance, connected, setBalance, notify } =
+  const { leases, balance, connected, onSupportedChain, setBalance, notify } =
     useAppDemoContext();
   const held = leases
     .map((lease) => ({ lease, amount: heldAmount(lease) }))
@@ -80,7 +80,13 @@ export function DashboardSummary() {
               className="text-button"
               onClick={() => {
                 if (!connected) {
-                  notify("Connectez le portefeuille de démonstration.");
+                  notify("Connectez votre portefeuille.");
+                  return;
+                }
+                if (!onSupportedChain) {
+                  notify(
+                    "Passez sur Base Sepolia dans le menu du portefeuille.",
+                  );
                   return;
                 }
                 setBalance(0);

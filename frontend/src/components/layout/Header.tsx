@@ -1,9 +1,9 @@
-import { Menu, Wallet } from "lucide-react";
+import { WalletControls } from "../wallet/WalletControls";
+import { Menu } from "lucide-react";
 import useAppDemoContext from "../../contexts/AppDemoContext";
 
 export function Header() {
-  const { mobile, setMobile, page, connected, setConnected, notify } =
-    useAppDemoContext();
+  const { mobile, setMobile, page } = useAppDemoContext();
   return (
     <header>
       <button
@@ -21,20 +21,7 @@ export function Header() {
       </div>
       <div className="header-right">
         <span className="demo-pill">Mode démonstration</span>
-        <button
-          className={connected ? "wallet-button connected" : "wallet-button"}
-          onClick={() => {
-            setConnected(!connected);
-            notify(
-              connected
-                ? "Portefeuille déconnecté."
-                : "Portefeuille fictif connecté. Aucune transaction réelle.",
-            );
-          }}
-        >
-          <Wallet size={16} />
-          {connected ? "0x71C…4f2A" : "Connecter un wallet"}
-        </button>
+        <WalletControls />
       </div>
     </header>
   );

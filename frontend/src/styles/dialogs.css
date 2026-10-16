@@ -279,3 +279,41 @@
   color: var(--muted);
   padding: 2px;
 }
+
+.wallet-options {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0;
+}
+.wallet-option {
+  width: 100%;
+  justify-content: flex-start;
+}
+.wallet-details {
+  margin: 24px 0;
+}
+.wallet-details dt {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 16px;
+}
+.wallet-details dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.wallet-install {
+  font-size: 14px;
+  color: var(--muted);
+}
+.wallet-error {
+  margin-top: 20px;
+  padding: 12px;
+  border: 1px solid var(--disputed);
+  border-radius: var(--r-control);
+  color: var(--disputed);
+}
+.wallet-disconnect {
+  display: flex;
+  margin-top: 16px;
+}

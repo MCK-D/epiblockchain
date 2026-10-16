@@ -11,7 +11,8 @@ export function HelpContent() {
       <h2>Un cadre clair pour votre caution.</h2>
       <p>
         Ce prototype interactif simule un contrat de dépôt de garantie, sans
-        backend ni portefeuille réel.
+        backend. Le portefeuille connecté est réel, mais les actions des baux ne
+        demandent aucune signature ni transaction.
       </p>
       {[
         [

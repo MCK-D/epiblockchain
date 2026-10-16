@@ -1,0 +1,17 @@
+import { createConfig, http } from "wagmi";
+import { baseSepolia } from "wagmi/chains";
+import { injected } from "wagmi/connectors";
+
+export const wagmiConfig = createConfig({
+  chains: [baseSepolia],
+  connectors: [injected({ shimDisconnect: true })],
+  multiInjectedProviderDiscovery: true,
+  transports: { [baseSepolia.id]: http() },
+  ssr: true,
+});
+
+declare module "wagmi" {
+  interface Register {
+    config: typeof wagmiConfig;
+  }
+}
