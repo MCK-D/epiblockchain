@@ -1,0 +1,54 @@
+name: Sync organization repository
+
+on:
+  push:
+  delete:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-organization-repository
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository == 'MCK-D/epiblockchain'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SOURCE_REPOSITORY: MCK-D/epiblockchain
+      DESTINATION_REPOSITORY: EpitechPGE45-2026/G-ING-910-PAR-9-1-blockchain-2
+      SOURCE_TOKEN: ${{ github.token }}
+      MIRROR_TOKEN: ${{ secrets.ORG_MIRROR_TOKEN }}
+    steps:
+      - name: Check mirror credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$MIRROR_TOKEN" ]]; then
+            echo "::error::Add the ORG_MIRROR_TOKEN Actions secret with Contents and Workflows write access to the destination repository."
+            exit 1
+          fi
+
+      - name: Fetch source branches and tags and sync destination
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_auth="$(printf 'x-access-token:%s' "$SOURCE_TOKEN" | base64 -w0)"
+          mirror_auth="$(printf 'x-access-token:%s' "$MIRROR_TOKEN" | base64 -w0)"
+          echo "::add-mask::$source_auth"
+          echo "::add-mask::$mirror_auth"
+          mirror_dir="$(mktemp -d)"
+          trap 'rm -rf "$mirror_dir"' EXIT
+          git init --bare "$mirror_dir"
+          cd "$mirror_dir"
+          git -c "http.extraHeader=AUTHORIZATION: basic $source_auth" fetch --no-tags \
+            "https://github.com/$SOURCE_REPOSITORY.git" \
+            'refs/heads/*:refs/heads/*' 'refs/tags/*:refs/tags/*'
+          git -c "http.extraHeader=AUTHORIZATION: basic $mirror_auth" push --atomic \
+            "https://github.com/$DESTINATION_REPOSITORY.git" \
+            'refs/heads/*:refs/heads/*' 'refs/tags/*:refs/tags/*'
