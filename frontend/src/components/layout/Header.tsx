@@ -1,18 +1,9 @@
 import { Menu, Wallet } from "lucide-react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 
-type Props = Pick<
-  DemoApp,
-  "mobile" | "setMobile" | "page" | "connected" | "setConnected" | "notify"
->;
-export function Header({
-  mobile,
-  setMobile,
-  page,
-  connected,
-  setConnected,
-  notify,
-}: Props) {
+export function Header() {
+  const { mobile, setMobile, page, connected, setConnected, notify } =
+    useAppDemoContext();
   return (
     <header>
       <button

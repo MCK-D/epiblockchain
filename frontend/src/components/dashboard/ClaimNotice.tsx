@@ -1,9 +1,9 @@
 import { Clock3 } from "lucide-react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 import { eth } from "../../utils/format";
 
-type Props = Pick<DemoApp, "leases" | "setSelected">;
-export function ClaimNotice({ leases, setSelected }: Props) {
+export function ClaimNotice() {
+  const { leases, setSelected } = useAppDemoContext();
   const lease = leases.find((l) => l.status === "Réclamation");
   if (!lease) return null;
   return (

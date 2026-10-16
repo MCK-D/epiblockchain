@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { CircleHelp, House, LayoutDashboard, Leaf, Scale } from "lucide-react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 import type { Page } from "../../types/lease";
 
 const navigation: { label: Page; icon: LucideIcon }[] = [
@@ -9,18 +9,9 @@ const navigation: { label: Page; icon: LucideIcon }[] = [
   { label: "Arbitrage", icon: Scale },
 ];
 
-type Props = Pick<
-  DemoApp,
-  "mobile" | "page" | "setPage" | "setMobile" | "leases" | "setHelp"
->;
-export function Sidebar({
-  mobile,
-  page,
-  setPage,
-  setMobile,
-  leases,
-  setHelp,
-}: Props) {
+export function Sidebar() {
+  const { mobile, page, setPage, setMobile, leases, setHelp } =
+    useAppDemoContext();
   return (
     <aside className={mobile ? "sidebar open" : "sidebar"}>
       <a

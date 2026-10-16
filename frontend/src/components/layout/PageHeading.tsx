@@ -1,8 +1,8 @@
 import { Plus } from "lucide-react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 
-type Props = Pick<DemoApp, "page" | "setCreate">;
-export function PageHeading({ page, setCreate }: Props) {
+export function PageHeading() {
+  const { page, setCreate } = useAppDemoContext();
   return (
     <div className="page-heading">
       <div>

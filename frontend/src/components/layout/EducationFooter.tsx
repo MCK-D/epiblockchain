@@ -1,4 +1,4 @@
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 
 const rules = [
   {
@@ -15,8 +15,8 @@ const rules = [
   },
 ];
 
-type Props = Pick<DemoApp, "setHelp">;
-export function EducationFooter({ setHelp }: Props) {
+export function EducationFooter() {
+  const { setHelp } = useAppDemoContext();
   return (
     <>
       <section className="rules" aria-labelledby="rules-title">

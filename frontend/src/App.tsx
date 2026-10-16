@@ -12,9 +12,9 @@ import { LeaseDetails } from "./components/leases/LeaseDetails";
 import { LeaseList } from "./components/leases/LeaseList";
 import { Modal } from "./components/ui/Modal";
 import { Toast } from "./components/ui/Toast";
-import { useDemoApp } from "./hooks/useDemoApp";
+import useAppDemoContext from "./contexts/AppDemoContext";
 export function App() {
-  const app = useDemoApp();
+  const app = useAppDemoContext();
   const closeModal = () => {
     app.setCreate(false);
     app.setSelected(null);
@@ -23,58 +23,22 @@ export function App() {
   return (
     <MotionConfig reducedMotion="user">
       <div className="app">
-        <Sidebar
-          mobile={app.mobile}
-          page={app.page}
-          setPage={app.setPage}
-          setMobile={app.setMobile}
-          leases={app.leases}
-          setHelp={app.setHelp}
-        />
+        <Sidebar />
         <div className="main">
-          <Header
-            mobile={app.mobile}
-            setMobile={app.setMobile}
-            page={app.page}
-            connected={app.connected}
-            setConnected={app.setConnected}
-            notify={app.notify}
-          />
+          <Header />
           <main>
-            <PageHeading page={app.page} setCreate={app.setCreate} />
-            <RoleSwitcher
-              role={app.role}
-              setRole={app.setRole}
-              setPage={app.setPage}
-            />
+            <PageHeading />
+            <RoleSwitcher />
             {app.page === "Vue d’ensemble" && (
               <>
-                <DashboardSummary
-                  leases={app.leases}
-                  balance={app.balance}
-                  connected={app.connected}
-                  setBalance={app.setBalance}
-                  notify={app.notify}
-                />
+                <DashboardSummary />
                 {app.leases.some((lease) => lease.status === "Réclamation") && (
-                  <ClaimNotice
-                    leases={app.leases}
-                    setSelected={app.setSelected}
-                  />
+                  <ClaimNotice />
                 )}
               </>
             )}
-            <LeaseList
-              leases={app.leases}
-              filter={app.filter}
-              setFilter={app.setFilter}
-              page={app.page}
-              setPage={app.setPage}
-              query={app.query}
-              setQuery={app.setQuery}
-              setSelected={app.setSelected}
-            />
-            <EducationFooter setHelp={app.setHelp} />
+            <LeaseList />
+            <EducationFooter />
           </main>
         </div>
         <AnimatePresence>
@@ -90,26 +54,11 @@ export function App() {
               onClose={closeModal}
             >
               {app.create ? (
-                <CreateLeaseForm
-                  leases={app.leases}
-                  save={app.save}
-                  setCreate={app.setCreate}
-                  notify={app.notify}
-                />
+                <CreateLeaseForm />
               ) : app.help ? (
-                <HelpContent
-                  setLeases={app.setLeases}
-                  setBalance={app.setBalance}
-                  notify={app.notify}
-                  setHelp={app.setHelp}
-                />
+                <HelpContent />
               ) : (
-                <LeaseDetails
-                  selected={app.selected}
-                  role={app.role}
-                  act={app.act}
-                  notify={app.notify}
-                />
+                <LeaseDetails />
               )}
             </Modal>
           )}

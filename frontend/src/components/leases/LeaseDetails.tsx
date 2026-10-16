@@ -1,5 +1,5 @@
 import { Copy } from "lucide-react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 import type { Lease } from "../../types/lease";
 import { date, eth } from "../../utils/format";
 import { LeaseActions } from "./LeaseActions";
@@ -35,8 +35,8 @@ function stepStates(lease: Lease) {
   });
 }
 
-type Props = Pick<DemoApp, "selected" | "role" | "act" | "notify">;
-export function LeaseDetails({ selected, role, act, notify }: Props) {
+export function LeaseDetails() {
+  const { selected, role, act, notify } = useAppDemoContext();
   if (!selected) return null;
   return (
     <>

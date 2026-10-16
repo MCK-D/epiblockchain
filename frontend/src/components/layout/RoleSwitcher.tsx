@@ -1,8 +1,8 @@
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 import type { Role } from "../../types/lease";
 
-type Props = Pick<DemoApp, "role" | "setRole" | "setPage">;
-export function RoleSwitcher({ role, setRole, setPage }: Props) {
+export function RoleSwitcher() {
+  const { role, setRole, setPage } = useAppDemoContext();
   return (
     <div className="role-row">
       <span>Voir en tant que</span>

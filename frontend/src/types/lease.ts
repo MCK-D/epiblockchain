@@ -12,3 +12,5 @@ export type Lease = {
   history: string[];
 };
 export type Page = "Vue d’ensemble" | "Mes baux" | "Arbitrage";
+
+export type LeaseFilter = Status | "Tous les baux";

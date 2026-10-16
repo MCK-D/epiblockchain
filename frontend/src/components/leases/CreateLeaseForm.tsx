@@ -1,9 +1,9 @@
 import { ArrowRight } from "lucide-react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 import type { Lease } from "../../types/lease";
 
-type Props = Pick<DemoApp, "leases" | "save" | "setCreate" | "notify">;
-export function CreateLeaseForm({ leases, save, setCreate, notify }: Props) {
+export function CreateLeaseForm() {
+  const { leases, save, setCreate, notify } = useAppDemoContext();
   return (
     <>
       <h2>Créer un bail</h2>

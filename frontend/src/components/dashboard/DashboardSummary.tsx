@@ -1,12 +1,7 @@
 import { motion } from "motion/react";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 import type { Lease } from "../../types/lease";
 import { eth } from "../../utils/format";
-
-type Props = Pick<
-  DemoApp,
-  "leases" | "balance" | "connected" | "setBalance" | "notify"
->;
 
 // Amount still held by the contract for a lease. Once a claim is filed, the
 // unclaimed part goes back to the tenant, so only the claimed amount stays.
@@ -23,13 +18,9 @@ const heldLabel: Partial<Record<Lease["status"], string>> = {
   Litige: "contesté, en attente de l’arbitre",
 };
 
-export function DashboardSummary({
-  leases,
-  balance,
-  connected,
-  setBalance,
-  notify,
-}: Props) {
+export function DashboardSummary() {
+  const { leases, balance, connected, setBalance, notify } =
+    useAppDemoContext();
   const held = leases
     .map((lease) => ({ lease, amount: heldAmount(lease) }))
     .filter(({ amount }) => amount > 0);

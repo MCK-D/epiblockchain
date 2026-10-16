@@ -1,10 +1,10 @@
 import { ShieldCheck } from "lucide-react";
 import { demoLeases } from "../../data/demoLeases";
-import type { DemoApp } from "../../hooks/useDemoApp";
+import useAppDemoContext from "../../contexts/AppDemoContext";
 import { clearLeases } from "../../services/leaseStorage";
 
-type Props = Pick<DemoApp, "setLeases" | "setBalance" | "notify" | "setHelp">;
-export function HelpContent({ setLeases, setBalance, notify, setHelp }: Props) {
+export function HelpContent() {
+  const { setLeases, setBalance, notify, setHelp } = useAppDemoContext();
   return (
     <>
       <ShieldCheck size={32} />

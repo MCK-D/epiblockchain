@@ -99,7 +99,8 @@ frontend/src/
 │   ├── leases/              # Liste, ligne, création, détail et actions
 │   ├── help/                # Explication du fonctionnement
 │   └── ui/                  # Modale et notification réutilisables
-├── hooks/                   # État de démonstration et notifications
+├── contexts/                # État partagé, provider et hook sécurisé
+├── hooks/                   # Notifications
 ├── services/                # Accès au stockage local des baux
 ├── data/                    # Jeu de données de démonstration
 ├── types/                   # Types partagés : bail, rôle, état et page
@@ -107,6 +108,33 @@ frontend/src/
 └── styles/                  # Base, layout, composants et responsive
 ```
 
-Les composants reçoivent des propriétés typées et ne lisent pas directement le stockage, hormis la commande explicite de réinitialisation qui passe par le service. `useDemoApp` centralise les transitions simulées ; `leaseStorage` isole leur persistance pour préparer une future source de données. Les champs temporaires des formulaires d’actions restent dans `LeaseActions`. `useNotification` gère la durée des notifications et nettoie son minuteur au démontage.
+Les composants reçoivent des propriétés typées et ne lisent pas directement le stockage, hormis la commande explicite de réinitialisation qui passe par le service. `AppDemoContextProvider` centralise l’état partagé et les transitions simulées ; `leaseStorage` isole leur persistance pour préparer une future source de données. Les champs temporaires des formulaires d’actions restent dans `LeaseActions`. `useNotification` gère la durée des notifications et nettoie son minuteur au démontage.
 
-Pour faire évoluer un écran, modifier son composant et sa feuille de style dédiée. Pour modifier une transition de démonstration, intervenir dans `hooks/useDemoApp.ts`. Pour changer les exemples, modifier `data/demoLeases.ts`. Les composants `Modal` et `Toast` restent indépendants du domaine locatif.
+Pour faire évoluer un écran, modifier son composant et sa feuille de style dédiée. Pour modifier une transition de démonstration, intervenir dans `contexts/AppDemoContext.tsx`. Pour changer les exemples, modifier `data/demoLeases.ts`. Les composants `Modal` et `Toast` restent indépendants du domaine locatif.
+
+### Contexte de démonstration
+
+`contexts/AppDemoContext.tsx` définit le contrat explicite `AppDemoContextProps`, le contexte, le hook par défaut `useAppDemoContext()` et le composant nommé `AppDemoContextProvider`. Chaque setter utilise `Dispatch<SetStateAction<T>>` : il accepte une valeur ou une fonction calculant la valeur suivante. Les pages, rôles, statuts et filtres utilisent des unions typées.
+
+Le provider enveloppe `App` dans `main.tsx`. Les composants connectés lisent uniquement les champs nécessaires via le hook, sans transmission de l’état partagé à travers `App`. Utiliser ce hook hors du provider déclenche une erreur explicite. Les composants génériques (`Modal`, `Toast`, `LeaseRow`) et les champs temporaires des formulaires restent indépendants du contexte.
+
+```tsx
+import useAppDemoContext, {
+  AppDemoContextProvider,
+} from "./contexts/AppDemoContext";
+
+function DemoWallet() {
+  const { connected, setConnected } = useAppDemoContext();
+  return (
+    <button onClick={() => setConnected((previous) => !previous)}>
+      {connected ? "Déconnecter" : "Connecter"}
+    </button>
+  );
+}
+
+<AppDemoContextProvider>
+  <DemoWallet />
+</AppDemoContextProvider>;
+```
+
+Depuis `frontend/`, `npm test` vérifie la garde du hook et l’accès au contexte depuis les descendants du provider.
