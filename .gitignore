@@ -18,3 +18,7 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Local tool state
+.omc/
+.playwright-mcp/

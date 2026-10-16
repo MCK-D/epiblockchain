@@ -6,7 +6,6 @@ export function PageHeading({ page, setCreate }: Props) {
   return (
     <div className="page-heading">
       <div>
-        <div className="eyebrow">VOTRE CAUTION, EN TOUTE CLARTÉ</div>
         <h1>
           {page === "Vue d’ensemble"
             ? "Chaque bail commence par la confiance."

@@ -23,15 +23,15 @@ export function Header({
         <Menu />
       </button>
       <div className="breadcrumb">
-        Mon espace <span>/</span> <b>{page}</b>
+        <span className="crumb-root">
+          Mon espace <span aria-hidden="true">/</span>
+        </span>
+        <b>{page}</b>
       </div>
       <div className="header-right">
-        <span className="demo-pill">
-          <span />
-          Mode démonstration
-        </span>
+        <span className="demo-pill">Mode démonstration</span>
         <button
-          className="wallet-button"
+          className={connected ? "wallet-button connected" : "wallet-button"}
           onClick={() => {
             setConnected(!connected);
             notify(

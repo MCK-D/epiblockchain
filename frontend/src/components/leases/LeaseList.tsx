@@ -1,4 +1,4 @@
-import { ArrowRight, Search, ShieldCheck } from "lucide-react";
+import { Search } from "lucide-react";
 import type { DemoApp } from "../../hooks/useDemoApp";
 import { LeaseRow } from "./LeaseRow";
 
@@ -40,12 +40,12 @@ export function LeaseList({
           <p>
             {page === "Arbitrage"
               ? "Les fonds non contestés restent hors de portée de l’arbitre."
-              : "Une vue simple sur vos engagements."}
+              : "Cliquez sur un bail pour voir son historique et les actions possibles."}
           </p>
         </div>
         {page === "Vue d’ensemble" && (
           <button className="text-button" onClick={() => setPage("Mes baux")}>
-            Voir tous les baux <ArrowRight size={15} />
+            Voir tous les baux
           </button>
         )}
       </div>
@@ -88,22 +88,24 @@ export function LeaseList({
         <table>
           <thead>
             <tr>
-              <th>BAIL / BIEN</th>
-              <th>CAUTION</th>
-              <th>STATUT</th>
-              <th>FIN DU BAIL</th>
-              <th />
+              <th>Bien</th>
+              <th>Caution</th>
+              <th>État</th>
+              <th>Fin du bail</th>
+              <th>
+                <span className="visually-hidden">Ouvrir</span>
+              </th>
             </tr>
           </thead>
           <tbody>
-            {shown.map((l, i) => (
-              <LeaseRow key={l.id} lease={l} index={i} onSelect={setSelected} />
+            {shown.map((l) => (
+              <LeaseRow key={l.id} lease={l} onSelect={setSelected} />
             ))}
           </tbody>
         </table>
         {!shown.length && (
           <div className="empty">
-            <Search />
+            <Search size={22} />
             <h3>Aucun bail trouvé</h3>
             <p>Essayez un autre filtre ou créez votre premier bail.</p>
             <button
@@ -120,12 +122,7 @@ export function LeaseList({
       </div>
       <div className="table-footer">
         <span>
-          {shown.length} bail{shown.length > 1 ? "s" : ""} affiché
-          {shown.length > 1 ? "s" : ""}
-        </span>
-        <span>
-          <ShieldCheck size={13} />
-          Données de démonstration
+          {shown.length} {shown.length > 1 ? "baux affichés" : "bail affiché"}
         </span>
       </div>
     </section>

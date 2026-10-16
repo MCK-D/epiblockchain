@@ -47,7 +47,7 @@ export function useDemoApp() {
     save(leases.map((l) => (l.id === selected.id ? updated : l)));
     setSelected(updated);
     setBalance((b) => b + credit);
-    notify(label + " — simulation enregistrée.");
+    notify(label + ". Simulation enregistrée.");
   }
 
   return {

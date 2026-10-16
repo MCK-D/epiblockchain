@@ -6,7 +6,6 @@ type Props = Pick<DemoApp, "leases" | "save" | "setCreate" | "notify">;
 export function CreateLeaseForm({ leases, save, setCreate, notify }: Props) {
   return (
     <>
-      <span className="eyebrow">NOUVEAU DÉPART</span>
       <h2>Créer un bail</h2>
       <p>Préparez les conditions de votre dépôt de garantie fictif.</p>
       <form
@@ -22,7 +21,7 @@ export function CreateLeaseForm({ leases, save, setCreate, notify }: Props) {
           const l: Lease = {
             id: Math.max(...leases.map((l) => l.id)) + 1,
             title: String(f.get("title")),
-            subtitle: "Bail résidentiel · Démonstration",
+            subtitle: "Bail résidentiel, démonstration",
             deposit: Number(f.get("deposit")),
             end: String(f.get("end")),
             status: "Proposé",
@@ -39,7 +38,7 @@ export function CreateLeaseForm({ leases, save, setCreate, notify }: Props) {
           <input
             name="title"
             required
-            placeholder="Appartement · Paris 11e"
+            placeholder="Appartement, Paris 11e"
             maxLength={70}
           />
         </label>

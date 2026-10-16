@@ -3,43 +3,116 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
-  background: #2b4c35;
-  color: white;
-  border-radius: 6px;
-  padding: 12px 16px;
-  font-size: 11px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--r-control);
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 600;
   white-space: nowrap;
 }
+.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.secondary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  padding: 10px 16px;
+  border-radius: var(--r-control);
+  font-size: 14px;
+  font-weight: 600;
+}
+.secondary:hover:not(:disabled) {
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
+}
+.text-button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-ink);
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--leaf);
+  text-underline-offset: 4px;
+}
+.text-button:hover:not(:disabled) {
+  text-decoration-color: currentColor;
+}
+.text-button:disabled {
+  text-decoration: none;
+}
+
 .role-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 30px 0 26px;
-  font-size: 10px;
-  color: #9aa58b;
+  margin: 28px 0 24px;
+  font-size: 14px;
+  color: var(--muted);
 }
 .segmented {
   display: flex;
-  gap: 3px;
+  gap: 2px;
   padding: 3px;
-  background: #eff2e8;
-  border: 1px solid #e1e7d5;
-  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
 }
 .segmented button {
-  padding: 7px 12px;
-  background: transparent;
-  color: #93a081;
-  font-size: 10px;
-  border-radius: 4px;
+  padding: 6px 14px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--r-control);
+}
+.segmented button:hover:not(.selected) {
+  color: var(--ink);
 }
 .segmented .selected {
-  background: white;
-  color: #607c47;
-  box-shadow: 0 1px 3px #23382f12;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 .simulation-note {
   margin-left: auto;
-  font-size: 9px;
-  color: #acb59e;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+.status-actif {
+  background: var(--active-bg);
+  color: var(--active);
+}
+.status-proposé {
+  background: var(--proposed-bg);
+  color: var(--proposed);
+}
+.status-réclamation {
+  background: var(--claimed-bg);
+  color: var(--claimed);
+}
+.status-litige {
+  background: var(--disputed-bg);
+  color: var(--disputed);
+}
+.status-clôturé,
+.status-annulé {
+  background: var(--closed-bg);
+  color: var(--closed);
 }

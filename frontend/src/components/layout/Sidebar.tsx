@@ -1,14 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import {
-  ArrowUpRight,
-  ChevronDown,
-  CircleHelp,
-  House,
-  LayoutDashboard,
-  Leaf,
-  Scale,
-  ShieldCheck,
-} from "lucide-react";
+import { CircleHelp, House, LayoutDashboard, Leaf, Scale } from "lucide-react";
 import type { DemoApp } from "../../hooks/useDemoApp";
 import type { Page } from "../../types/lease";
 
@@ -41,55 +32,41 @@ export function Sidebar({
         }}
       >
         <span className="brand-icon">
-          <Leaf size={24} />
+          <Leaf size={20} />
         </span>
-        caution<span className="brand-dot">.</span>
+        caution
       </a>
-      <div className="workspace">
-        <span className="avatar">D</span>
-        <div>
-          Espace personnel<small>Compte de démonstration</small>
-        </div>
-        <ChevronDown size={15} />
+      <div className="account">
+        <strong>Espace personnel</strong>
+        Compte de démonstration
       </div>
-      <span className="nav-label">VOTRE ESPACE</span>
-      <nav>
-        {navigation.map(({ icon: Icon, label }) => {
-          return (
-            <button
-              key={label}
-              className={page === label ? "active" : ""}
-              onClick={() => {
-                setPage(label);
-                setMobile(false);
-              }}
-            >
-              <Icon size={19} />
-              {label}
-              {label === "Mes baux" && (
-                <span className="nav-count">{leases.length}</span>
-              )}
-            </button>
-          );
-        })}
+      <nav aria-label="Navigation principale">
+        {navigation.map(({ icon: Icon, label }) => (
+          <button
+            key={label}
+            className={page === label ? "active" : ""}
+            aria-current={page === label ? "page" : undefined}
+            onClick={() => {
+              setPage(label);
+              setMobile(false);
+            }}
+          >
+            <Icon size={18} />
+            {label}
+            {label === "Mes baux" && (
+              <span className="nav-count">{leases.length}</span>
+            )}
+          </button>
+        ))}
       </nav>
       <div className="sidebar-bottom">
-        <div className="trust-card">
-          <ShieldCheck size={23} />
-          <strong>La confiance, par contrat.</strong>
-          <p>Des règles transparentes pour votre dépôt de garantie.</p>
-          <button onClick={() => setHelp(true)}>
-            Comment ça marche <ArrowUpRight size={14} />
-          </button>
-        </div>
         <button className="help-button" onClick={() => setHelp(true)}>
           <CircleHelp size={18} />
           Comprendre Caution
-          <ArrowUpRight size={15} />
         </button>
         <div className="network">
-          <span />
-          Base Sepolia <small>TESTNET</small>
+          <span className="live-dot" />
+          Base Sepolia <small>Testnet</small>
         </div>
       </div>
     </aside>

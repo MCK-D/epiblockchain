@@ -1,46 +1,39 @@
-import { ArrowUpRight, House } from "lucide-react";
-import { motion } from "motion/react";
+import { ChevronRight } from "lucide-react";
 import type { Lease } from "../../types/lease";
 import { date, eth } from "../../utils/format";
 
-type Props = { lease: Lease; index: number; onSelect: (lease: Lease) => void };
-export function LeaseRow({ lease, index, onSelect }: Props) {
+type Props = { lease: Lease; onSelect: (lease: Lease) => void };
+export function LeaseRow({ lease, onSelect }: Props) {
   return (
-    <motion.tr
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: index * 0.05 }}
-      onClick={() => {
-        onSelect(lease);
+    <tr
+      tabIndex={0}
+      aria-label={`Ouvrir le bail ${lease.title}`}
+      onClick={() => onSelect(lease)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect(lease);
+        }
       }}
     >
       <td>
-        <div className={"property-icon p" + index}>
-          <House size={21} />
-        </div>
-        <div>
-          <strong>{lease.title}</strong>
-          <small>
-            #{lease.id} <span>·</span> {lease.subtitle}
-          </small>
-        </div>
+        <strong>{lease.title}</strong>
+        <small>
+          {lease.subtitle}, n° {lease.id}
+        </small>
       </td>
-      <td className="amount">
-        {eth(lease.deposit)}
-        <small>Dépôt de garantie</small>
-      </td>
+      <td className="amount">{eth(lease.deposit)}</td>
       <td>
         <span className={"badge status-" + lease.status.toLowerCase()}>
-          <span />
           {lease.status === "Proposé" ? "À financer" : lease.status}
         </span>
       </td>
       <td className="date">{date(lease.end)}</td>
       <td>
-        <button className="row-arrow" aria-label={"Ouvrir le bail " + lease.id}>
-          <ArrowUpRight size={18} />
-        </button>
+        <span className="row-arrow" aria-hidden="true">
+          <ChevronRight size={18} />
+        </span>
       </td>
-    </motion.tr>
+    </tr>
   );
 }
