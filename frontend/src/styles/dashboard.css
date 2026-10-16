@@ -1,0 +1,163 @@
+/* Ledger: where the deposits are right now. */
+.ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  overflow: hidden;
+}
+.ledger-main {
+  padding: 28px 32px 30px;
+}
+.ledger-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.ledger-total {
+  display: block;
+  margin: 6px 0 4px;
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--accent-ink);
+  font-variant-numeric: tabular-nums;
+}
+.ledger-total span {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin-left: 8px;
+  color: var(--ink-soft);
+}
+.ledger-sub {
+  max-width: 56ch;
+  font-size: 15px;
+  color: var(--muted);
+}
+.ledger-bar {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+  margin: 26px 0 16px;
+}
+.ledger-bar > span {
+  border-radius: var(--r-pill);
+  min-width: 8px;
+}
+.ledger-bar .empty-bar {
+  flex: 1;
+  background: var(--line-soft);
+}
+.ledger-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ledger-legend li {
+  display: grid;
+  grid-template-columns: 10px auto;
+  column-gap: 8px;
+  align-items: center;
+  font-size: 14px;
+}
+.ledger-legend li > i {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-pill);
+}
+.ledger-legend b {
+  font-weight: 600;
+}
+.ledger-legend small {
+  grid-column: 2;
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.seg-actif {
+  background: var(--active);
+}
+.seg-réclamation {
+  background: var(--claimed-seg);
+}
+.seg-litige {
+  background: var(--disputed);
+}
+
+.ledger-side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  background: var(--surface-soft);
+  border-left: 1px solid var(--line);
+}
+.ledger-side > div {
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.ledger-side > div + div {
+  border-top: 1px solid var(--line);
+}
+.ledger-side p {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.ledger-side strong {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.ledger-side .text-button {
+  margin-top: 6px;
+  align-self: flex-start;
+}
+.ledger-side small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Claim waiting for an answer */
+.attention {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--claimed-bg);
+  border: 1px solid var(--claimed-line);
+  border-radius: var(--r-panel);
+  margin: 20px 0 8px;
+  padding: 16px 20px;
+  color: var(--claimed);
+}
+.attention-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  background: var(--claimed-line);
+  border-radius: var(--r-control);
+}
+.attention strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--claimed-strong);
+}
+.attention p {
+  font-size: 14px;
+  margin-top: 2px;
+  color: var(--claimed);
+}
+.attention .primary {
+  flex-shrink: 0;
+  margin-left: auto;
+}

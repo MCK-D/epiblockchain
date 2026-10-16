@@ -1,0 +1,281 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  backdrop-filter: blur(3px);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal {
+  background: var(--surface);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  width: 560px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+  outline: 0;
+}
+.close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-control);
+  color: var(--muted);
+}
+.close:hover {
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+.modal-kicker {
+  font-size: 14px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.modal h2 {
+  font-size: 28px;
+  margin: 4px 48px 12px 0;
+}
+.modal > p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.modal > svg:first-of-type {
+  color: var(--accent-ink);
+  margin-bottom: 12px;
+}
+.modal h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 26px 0 10px;
+}
+.modal form {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+.modal form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.modal input {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  padding: 10px 12px;
+  min-width: 0;
+  width: 100%;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 400;
+}
+.modal input:focus {
+  outline: 0;
+  border-color: var(--accent-ink);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.modal input::placeholder {
+  color: var(--placeholder);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.notice {
+  background: var(--surface-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-control);
+  padding: 12px 14px;
+  margin: 16px 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* Lease detail */
+.detail-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 22px 0;
+}
+.detail-metrics > div {
+  padding: 14px 16px;
+  background: var(--surface-soft);
+  border-radius: var(--r-control);
+}
+.detail-metrics small {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+.detail-metrics strong {
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Position of the lease in the contract's state machine */
+.lifecycle {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lifecycle li {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.lifecycle li::before {
+  content: "";
+  display: block;
+  height: 6px;
+  margin-bottom: 8px;
+  border-radius: var(--r-pill);
+  background: var(--line-soft);
+}
+.lifecycle li.done::before {
+  background: var(--leaf);
+}
+.lifecycle li.current {
+  color: var(--ink);
+}
+.lifecycle li.current::before {
+  background: var(--accent);
+}
+.lifecycle li.skipped {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 2px solid var(--line-soft);
+}
+.timeline li {
+  position: relative;
+  padding: 0 0 12px 18px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.timeline li::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--leaf);
+}
+.timeline li:last-child {
+  padding-bottom: 0;
+}
+.timeline li:last-child::before {
+  background: var(--accent);
+  border-color: var(--accent-ink);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+.actions + form,
+.modal > .primary {
+  margin-top: 20px;
+}
+.claim-box {
+  margin-top: 22px;
+  padding: 14px 16px;
+  background: var(--claimed-bg);
+  border-radius: var(--r-control);
+  color: var(--claimed-strong);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.claim-box p {
+  font-size: 14px;
+  margin-top: 4px;
+  color: var(--claimed);
+}
+.copy {
+  margin-top: 24px;
+}
+
+/* Help */
+.help-step {
+  display: flex;
+  gap: 14px;
+  border-bottom: 1px solid var(--line-soft);
+  padding: 16px 0;
+}
+.help-step > span {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.help-step h3 {
+  margin: 2px 0 4px;
+}
+.help-step p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: var(--r-panel);
+  padding: 12px 14px 12px 16px;
+  color: var(--ink);
+  font-size: 14px;
+  max-width: calc(100vw - 32px);
+}
+.toast > svg {
+  flex-shrink: 0;
+  color: var(--accent-ink);
+}
+.toast button {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  padding: 2px;
+}

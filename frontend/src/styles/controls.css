@@ -1,0 +1,118 @@
+.primary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--r-control);
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.secondary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  padding: 10px 16px;
+  border-radius: var(--r-control);
+  font-size: 14px;
+  font-weight: 600;
+}
+.secondary:hover:not(:disabled) {
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
+}
+.text-button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-ink);
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--leaf);
+  text-underline-offset: 4px;
+}
+.text-button:hover:not(:disabled) {
+  text-decoration-color: currentColor;
+}
+.text-button:disabled {
+  text-decoration: none;
+}
+
+.role-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0 24px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+}
+.segmented button {
+  padding: 6px 14px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--r-control);
+}
+.segmented button:hover:not(.selected) {
+  color: var(--ink);
+}
+.segmented .selected {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.simulation-note {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+.status-actif {
+  background: var(--active-bg);
+  color: var(--active);
+}
+.status-proposé {
+  background: var(--proposed-bg);
+  color: var(--proposed);
+}
+.status-réclamation {
+  background: var(--claimed-bg);
+  color: var(--claimed);
+}
+.status-litige {
+  background: var(--disputed-bg);
+  color: var(--disputed);
+}
+.status-clôturé,
+.status-annulé {
+  background: var(--closed-bg);
+  color: var(--closed);
+}

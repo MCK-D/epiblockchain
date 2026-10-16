@@ -1,0 +1,69 @@
+/* How a deposit moves through the contract: a real sequence, so numbered. */
+.rules {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: 48px;
+  margin: 64px 0 48px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+.rules h2 {
+  max-width: 16ch;
+}
+.rules-intro p {
+  margin: 12px 0 20px;
+  max-width: 44ch;
+  font-size: 15px;
+  color: var(--muted);
+}
+.rules ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rule;
+}
+.rules li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 16px;
+  padding: 18px 0;
+  counter-increment: rule;
+}
+.rules li + li {
+  border-top: 1px solid var(--line-soft);
+}
+.rules li:first-child {
+  padding-top: 0;
+}
+.rules li::before {
+  content: counter(rule);
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-ink);
+}
+.rules li h3 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 32px;
+}
+.rules li p {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--line);
+  padding: 20px 0 28px;
+  font-size: 13px;
+  color: var(--muted);
+}

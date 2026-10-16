@@ -1,7 +1,24 @@
+# Node modules
 node_modules/
+
+# Build output
 dist/
+*.tsbuildinfo
+
+# Hardhat build artifacts and caches
+/artifacts
+/cache
+/types
+/coverage
+/.gas-snapshot
+/snapshots
+
+# Local files and environment (secrets go in the Hardhat keystore)
 *.local
-.env*
+.env
+.env.*
 !.env.example
 
-*.tsbuildinfo
+# Local tool state
+.omc/
+.playwright-mcp/
