@@ -2,7 +2,7 @@
 
 Projet du module « Blockchain & Decentralised Applications » (EPITECH, sujet escrow). Le locataire bloque la caution dans un contrat que personne ne contrôle ; à la fin du bail, le propriétaire réclame tout ou partie de la caution sur justificatifs, et un arbitre désigné à la création tranche le montant contesté.
 
-**État actuel** : le projet Hardhat 3 est initialisé, mais le contrat de caution reste à écrire (les fichiers `Counter` sont les exemples du template). Le frontend est encore une **démonstration simulée** : les baux, portefeuilles, soldes et actions sont fictifs, sans RPC ni transaction blockchain.
+**État actuel** : le squelette du contrat `contracts/RentalDeposit.sol` est en place (types, délais, événements, erreurs, `withdraw`). Les transitions du bail sont déclarées mais revert encore avec `NotImplemented` : chaque partie les écrit avec ses tests. Le frontend est encore une **démonstration simulée** : les baux, portefeuilles, soldes et actions sont fictifs, sans RPC ni transaction blockchain.
 
 ## Organisation du dépôt
 
@@ -10,6 +10,7 @@ Projet du module « Blockchain & Decentralised Applications » (EPITECH, sujet e
 contracts/            contrats Solidity (et tests Solidity *.t.sol)
 test/                 tests TypeScript (node:test + viem)
 ignition/modules/     modules de déploiement Hardhat Ignition
+ignition/parameters/  paramètres de déploiement (demo.json : délais de 2 minutes)
 ignition/deployments/ adresses déployées par réseau (versionnées)
 scripts/              scripts lancés avec `npx hardhat run`
 hardhat.config.ts     compilateur, réseau baseSepolia, vérification
@@ -29,7 +30,7 @@ Contrats :
 npm ci
 npx hardhat compile
 npx hardhat test                          # tests Solidity et TypeScript
-npx hardhat test nodejs test/Counter.ts   # un seul fichier de test TypeScript
+npx hardhat test nodejs test/RentalDeposit.ts   # un seul fichier de test TypeScript
 npx hardhat test solidity                 # tests Solidity uniquement
 ```
 
@@ -45,10 +46,10 @@ npx hardhat keystore set BASE_SEPOLIA_PRIVATE_KEY
 npx hardhat keystore set ETHERSCAN_API_KEY
 ```
 
-Ils ne servent qu’au déploiement sur Base Sepolia, pas aux tests locaux :
+Ils ne servent qu’au déploiement sur Base Sepolia, pas aux tests locaux. Sans fichier de paramètres, le module utilise les délais de production (60, 14 et 30 jours) ; `demo.json` les remplace par 2 minutes pour la soutenance :
 
 ```sh
-npx hardhat ignition deploy ignition/modules/<Module>.ts --network baseSepolia --verify
+npx hardhat ignition deploy ignition/modules/RentalDeposit.ts --network baseSepolia --parameters ignition/parameters/demo.json --verify
 ```
 
 Frontend :

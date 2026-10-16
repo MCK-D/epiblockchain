@@ -1,0 +1,7 @@
+{
+  "RentalDepositModule": {
+    "claimWindow": "120n",
+    "responseWindow": "120n",
+    "arbitrationWindow": "120n"
+  }
+}
