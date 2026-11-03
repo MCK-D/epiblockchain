@@ -172,28 +172,48 @@ contract RentalDeposit is ReentrancyGuard {
         uint64 endDate,
         bytes32 leaseHash
     ) external returns (uint256 leaseId) {
-        tenant;
-        arbiter;
-        deposit;
-        endDate;
-        leaseHash;
-        leaseId;
-        revert NotImplemented();
+        if (tenant == address(0) || tenant == msg.sender) revert InvalidTenant();
+        if (arbiter == address(0) || arbiter == msg.sender || arbiter == tenant) {
+            revert InvalidArbiter();
+        }
+        if (deposit == 0) revert ZeroDeposit();
+        if (endDate <= block.timestamp) revert EndDateInPast();
+
+        leaseId = ++leaseCount;
+        Lease storage lease = _leases[leaseId];
+        lease.landlord = msg.sender;
+        lease.tenant = tenant;
+        lease.arbiter = arbiter;
+        lease.status = Status.Proposed;
+        lease.endDate = endDate;
+        lease.deposit = deposit;
+        lease.leaseHash = leaseHash;
+
+        emit LeaseCreated(leaseId, msg.sender, tenant, arbiter, deposit, endDate, leaseHash);
     }
 
     /// @notice Le propriétaire annule un bail pas encore financé (Proposed → Cancelled).
     /// @dev Vérifier : NotLandlord, WrongStatus. Émettre LeaseCancelled.
     function cancel(uint256 leaseId) external {
-        _getLease(leaseId);
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        if (msg.sender != lease.landlord) revert NotLandlord();
+        _requireStatus(leaseId, lease, Status.Proposed);
+
+        lease.status = Status.Cancelled;
+        emit LeaseCancelled(leaseId);
     }
 
     /// @notice Le locataire verse la caution exacte (Proposed → Active).
     /// @dev Vérifier : NotTenant, WrongStatus, WrongDepositAmount (msg.value == deposit).
     /// Émettre LeaseFunded.
     function fund(uint256 leaseId) external payable {
-        _getLease(leaseId);
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        if (msg.sender != lease.tenant) revert NotTenant();
+        _requireStatus(leaseId, lease, Status.Proposed);
+        if (msg.value != lease.deposit) revert WrongDepositAmount(lease.deposit, msg.value);
+
+        lease.status = Status.Active;
+        emit LeaseFunded(leaseId, msg.value);
     }
 
     // ------------------------------------------------------------------
