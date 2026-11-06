@@ -17,6 +17,10 @@ export type AppContextProps = {
   setHelp: Dispatch<SetStateAction<boolean>>;
   mobile: boolean;
   setMobile: Dispatch<SetStateAction<boolean>>;
+  create: boolean;
+  setCreate: Dispatch<SetStateAction<boolean>>;
+  selected: bigint | undefined;
+  setSelected: Dispatch<SetStateAction<bigint | undefined>>;
 };
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -35,12 +39,16 @@ export const AppContextProvider = ({
   const [page, setPage] = useState<Page>("Vue d’ensemble");
   const [help, setHelp] = useState(false);
   const [mobile, setMobile] = useState(false);
+  const [create, setCreate] = useState(false);
+  const [selected, setSelected] = useState<bigint | undefined>(undefined);
 
   useEffect(() => {
     const close = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setHelp(false);
         setMobile(false);
+        setCreate(false);
+        setSelected(undefined);
       }
     };
     window.addEventListener("keydown", close);
@@ -54,6 +62,10 @@ export const AppContextProvider = ({
     setHelp,
     mobile,
     setMobile,
+    create,
+    setCreate,
+    selected,
+    setSelected,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

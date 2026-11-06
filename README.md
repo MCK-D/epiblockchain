@@ -127,9 +127,17 @@ La connexion du portefeuille fonctionne sur **Base Sepolia (84532)** avec wagmi 
 
 Le menu affiche l’adresse réelle et le réseau, propose de passer sur Base Sepolia et permet la déconnexion. Les changements de compte et de réseau sont suivis par wagmi. La reconnexion dépend de l’autorisation conservée par l’extension.
 
-Les baux, litiges et soldes restent **indisponibles** tant que les lectures du contrat ne sont pas intégrées. Un tiret signifie « indisponible », pas un solde nul. La création de bail est désactivée. Aucun bail d’exemple, faux solde, faux rôle, historique simulé, stockage local de bail ou simulation de transaction n’est conservé dans le code applicatif. Les anciennes données de démonstration présentes dans le navigateur ne sont plus lues.
+**Partie 1 reliée au contrat.** Le frontend lit les baux (`leaseCount`, puis `getLease` en un seul appel multicall) et affiche ceux où l’adresse connectée est propriétaire, locataire ou arbitre. Les rôles viennent des adresses enregistrées dans le contrat, jamais d’un sélecteur. Trois actions sont des transactions réelles, confirmées dans le portefeuille :
 
-Aucune signature, transaction ni lecture de contrat n’est envoyée. Seules la connexion et les demandes de changement de réseau sont adressées au portefeuille. Les rôles et permissions devront provenir du contrat, pas d’un sélecteur manuel.
+- **Créer un bail** (propriétaire) : adresses du locataire et de l’arbitre, caution, date de fin, et le fichier du bail et de l’état des lieux d’entrée. Le fichier reste sur l’appareil : seule son empreinte keccak256 est envoyée (`leaseHash`). L’identifiant du bail créé est lu dans l’événement `LeaseCreated`.
+- **Verser la caution** (locataire) : le montant exact, après affichage de l’arbitre, de la caution et de la date de fin.
+- **Annuler le bail** (propriétaire), tant qu’il n’est pas financé.
+
+Chaque transaction est simulée avant la signature : un refus du contrat est décodé et affiché avec sa raison (`NotTenant`, `EndDateInPast`…), sans frais. Une lecture qui échoue s’affiche comme un échec, jamais comme une liste vide ou un solde nul ; un tiret signifie « indisponible ».
+
+Tant que l’adresse du contrat n’est pas renseignée dans `frontend/src/config/contract.ts`, les baux sont indisponibles et la création est désactivée. Après un déploiement, recopier l’adresse depuis `ignition/deployments/chain-84532/deployed_addresses.json`. Si les signatures du contrat changent : `npx hardhat compile` à la racine, puis `npm run abi` dans `frontend/`.
+
+Les soldes, réclamations et litiges (parties 2 et 3) restent indisponibles. Aucun bail d’exemple, faux solde ou simulation de transaction n’est conservé dans le code applicatif.
 
 ## Organisation du frontend
 

@@ -168,3 +168,45 @@
   display: flex;
   margin-top: 16px;
 }
+
+/* Lease creation and detail */
+.field-error {
+  font-weight: 400;
+  color: var(--disputed);
+}
+.field-hint {
+  font-weight: 400;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.modal input[aria-invalid="true"] {
+  border-color: var(--disputed);
+}
+.lease-details {
+  margin: 20px 0;
+}
+.lease-details dt {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 14px;
+}
+.lease-details dd {
+  margin: 4px 0 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.lease-details .hash {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+.you,
+.roles {
+  color: var(--muted);
+}
+.modal > .secondary {
+  margin-top: 12px;
+}
+.modal .notice a {
+  color: var(--accent-ink);
+  font-weight: 600;
+}
