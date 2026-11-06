@@ -12,15 +12,6 @@
     border-top: 0;
     border-left: 1px solid var(--line);
   }
-  .simulation-note {
-    display: none;
-  }
-  .toolbar {
-    flex-wrap: wrap;
-  }
-  .search {
-    margin-left: auto;
-  }
 }
 
 @media (max-width: 860px) {
@@ -53,7 +44,7 @@
     margin-left: auto;
     gap: 10px;
   }
-  .demo-pill {
+  .testnet-pill {
     display: none;
   }
   .wallet-button {
@@ -73,17 +64,6 @@
   .page-heading p {
     font-size: 15px;
   }
-  .role-row {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .segmented {
-    width: 100%;
-  }
-  .segmented button {
-    flex: 1;
-    padding: 7px 6px;
-  }
   .ledger-main {
     padding: 22px 20px 24px;
   }
@@ -96,33 +76,12 @@
   .ledger-side strong {
     font-size: 22px;
   }
-  .attention {
-    flex-wrap: wrap;
-    padding: 16px;
-  }
-  .attention > div:nth-child(2) {
-    flex: 1;
-    min-width: 0;
-  }
-  .attention button {
-    width: 100%;
-  }
   .section-heading {
     flex-direction: column;
     align-items: flex-start;
   }
   h2 {
     font-size: 24px;
-  }
-  .search {
-    width: 100%;
-  }
-  .search input {
-    width: 100%;
-  }
-  th,
-  td {
-    padding-inline: 14px;
   }
   .rules {
     grid-template-columns: 1fr;
@@ -142,33 +101,11 @@
   .overlay {
     padding: 12px;
   }
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 600px) {
   .crumb-root {
     display: none;
-  }
-  th:nth-child(4),
-  td:nth-child(4),
-  th:nth-child(5),
-  td:nth-child(5) {
-    display: none;
-  }
-  th,
-  td {
-    padding-inline: 12px;
-  }
-  table {
-    white-space: normal;
-  }
-  td:first-child {
-    min-width: 140px;
-  }
-  .amount {
-    white-space: nowrap;
   }
 }
 
@@ -179,9 +116,6 @@
   .ledger-side > div + div {
     border-left: 0;
     border-top: 1px solid var(--line);
-  }
-  .lifecycle li {
-    font-size: 11px;
   }
 }
 

@@ -69,18 +69,6 @@ nav button.active {
   color: var(--accent-ink);
   font-weight: 600;
 }
-.nav-count {
-  margin-left: auto;
-  min-width: 24px;
-  text-align: center;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-pill);
-  padding: 0 7px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-}
 .sidebar-bottom {
   margin-top: auto;
   display: grid;
@@ -121,14 +109,6 @@ nav button.active {
   padding: 1px 8px;
   border-radius: var(--r-pill);
 }
-.live-dot {
-  display: inline-block;
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  background: var(--leaf);
-  border-radius: 50%;
-}
 
 /* Header */
 .main {
@@ -163,7 +143,7 @@ header {
   align-items: center;
   gap: 20px;
 }
-.demo-pill {
+.testnet-pill {
   font-size: 13px;
   font-weight: 600;
   color: var(--claimed);

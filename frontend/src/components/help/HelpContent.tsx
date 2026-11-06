@@ -1,18 +1,14 @@
 import { ShieldCheck } from "lucide-react";
-import { demoLeases } from "../../data/demoLeases";
-import useAppDemoContext from "../../contexts/AppDemoContext";
-import { clearLeases } from "../../services/leaseStorage";
 
 export function HelpContent() {
-  const { setLeases, setBalance, notify, setHelp } = useAppDemoContext();
   return (
     <>
       <ShieldCheck size={32} />
       <h2>Un cadre clair pour votre caution.</h2>
       <p>
-        Ce prototype interactif simule un contrat de dépôt de garantie, sans
-        backend. Le portefeuille connecté est réel, mais les actions des baux ne
-        demandent aucune signature ni transaction.
+        Le portefeuille peut être connecté à Base Sepolia. Les données et
+        opérations des baux ne sont pas encore reliées au contrat. Les règles
+        ci-dessous décrivent le fonctionnement prévu.
       </p>
       {[
         [
@@ -44,18 +40,6 @@ export function HelpContent() {
         locataire. Il reste une part de confiance : l’arbitre, la véracité des
         justificatifs et le réseau Base.
       </p>
-      <button
-        className="text-button"
-        onClick={() => {
-          clearLeases();
-          setLeases(demoLeases);
-          setBalance(0);
-          notify("Démonstration réinitialisée.");
-          setHelp(false);
-        }}
-      >
-        Réinitialiser les données de démonstration
-      </button>
     </>
   );
 }

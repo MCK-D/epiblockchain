@@ -1,8 +1,8 @@
 import { Plus } from "lucide-react";
-import useAppDemoContext from "../../contexts/AppDemoContext";
+import useAppContext from "../../contexts/AppContext";
 
 export function PageHeading() {
-  const { page, setCreate } = useAppDemoContext();
+  const { page } = useAppContext();
   return (
     <div className="page-heading">
       <div>
@@ -19,7 +19,11 @@ export function PageHeading() {
             : "Suivez vos dépôts de garantie, de la remise des clés à leur restitution."}
         </p>
       </div>
-      <button className="primary" onClick={() => setCreate(true)}>
+      <button
+        className="primary"
+        disabled
+        title="Disponible après intégration du contrat"
+      >
         <Plus size={18} />
         Créer un bail
       </button>

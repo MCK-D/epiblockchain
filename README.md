@@ -2,7 +2,7 @@
 
 Projet du module « Blockchain & Decentralised Applications » (EPITECH, sujet escrow). Le locataire bloque la caution dans un contrat que personne ne contrôle ; à la fin du bail, le propriétaire réclame tout ou partie de la caution sur justificatifs, et un arbitre désigné à la création tranche le montant contesté.
 
-**État actuel** : le squelette du contrat `contracts/RentalDeposit.sol` est en place (types, délais, événements, erreurs, `withdraw`). Les transitions du bail sont déclarées mais revert encore avec `NotImplemented` : chaque partie les écrit avec ses tests. Le frontend est encore une **démonstration simulée** : les baux, soldes et actions restent fictifs. La connexion à un portefeuille navigateur est réelle (wagmi + viem), sans signature ni transaction blockchain.
+**État actuel** : le squelette du contrat `contracts/RentalDeposit.sol` est en place (types, délais, événements, erreurs, `withdraw`). Les transitions du bail sont déclarées mais revert encore avec `NotImplemented` : chaque partie les écrit avec ses tests. La connexion à un portefeuille navigateur est réelle (wagmi + viem). Les données et opérations des baux ne sont pas encore reliées au contrat : le frontend affiche des états indisponibles, sans exemples fictifs ni actions simulées.
 
 ## Organisation du dépôt
 
@@ -64,98 +64,51 @@ npm run preview
 
 Stack frontend : React 19, TypeScript, Vite 7, Tailwind CSS 4, Motion et Lucide. `src/main.tsx` monte l’application ; `src/App.tsx` assemble les composants. Les styles importent Tailwind via son plugin Vite.
 
-## Parcours du frontend de démonstration
+## Frontend sans données fictives
 
-- Tableau de bord : montants, baux et réclamation à examiner.
-- Baux : recherche, filtres par état, détail et historique.
-- Création : libellé privé, caution, date de fin, adresses fictives du locataire et de l’arbitre.
-- Choix du rôle pour explorer le financement, la restitution, les réclamations et la résolution des litiges.
-- Le bouton de portefeuille connecte un **compte de démonstration**, sans extension.
-- Les baux sont enregistrés dans le `localStorage` de ce navigateur. Le solde et la connexion sont conservés uniquement pendant la session de la page. « Comprendre Caution » permet de réinitialiser le scénario.
+La connexion du portefeuille fonctionne sur **Base Sepolia (84532)** avec wagmi 3, viem et TanStack Query. Les extensions injectées et la découverte EIP-6963 sont prises en charge, sans identifiant de projet ni secret. WalletConnect et les connexions mobiles par QR code ne sont pas intégrés.
 
-## Scénario de découverte (démonstration)
+Le menu affiche l’adresse réelle et le réseau, propose de passer sur Base Sepolia et permet la déconnexion. Les changements de compte et de réseau sont suivis par wagmi. La reconnexion dépend de l’autorisation conservée par l’extension.
 
-1. Connecter une extension Ethereum installée, puis sélectionner Base Sepolia dans le menu du portefeuille.
-2. Dans le rôle Locataire, ouvrir le Studio de Lyon et contester la réclamation.
-3. Choisir Arbitre, ouvrir le litige et répartir le montant contesté.
-4. Choisir Propriétaire, créer un bail avec deux adresses de test distinctes au format `0x` suivi de 40 caractères hexadécimaux.
-5. Choisir Locataire, filtrer « À financer », ouvrir le bail et simuler le versement.
+Les baux, litiges et soldes restent **indisponibles** tant que les lectures du contrat ne sont pas intégrées. Un tiret signifie « indisponible », pas un solde nul. La création de bail est désactivée. Aucun bail d’exemple, faux solde, faux rôle, historique simulé, stockage local de bail ou simulation de transaction n’est conservé dans le code applicatif. Les anciennes données de démonstration présentes dans le navigateur ne sont plus lues.
 
-## Limites et suite
-
-Les rôles ne sont pas authentifiés, les délais ne sont pas exécutés automatiquement, et les justificatifs sont fictifs. Les adresses saisies lors de la création servent à valider le formulaire, sans être stockées ni utilisées comme autorisation. Les adresses du propriétaire et du contrat ne sont pas encore modélisées. Les actions de dépassement de délai restent à intégrer avec le contrat final. Le prototype ne constitue pas une implémentation financière ni une preuve de décentralisation.
-
-La connexion utilise wagmi et viem sur **Base Sepolia uniquement**. Les appels aux contrats seront intégrés séparément. Aucun secret n’est nécessaire au frontend : ne fournissez jamais de clé privée à l’application.
+Aucune signature, transaction ni lecture de contrat n’est envoyée. Seules la connexion et les demandes de changement de réseau sont adressées au portefeuille. Les rôles et permissions devront provenir du contrat, pas d’un sélecteur manuel.
 
 ## Organisation du frontend
 
 ```text
 frontend/src/
-├── main.tsx                 # Point d’entrée React
-├── App.tsx                  # Assemblage de l’interface et des modales
+├── main.tsx             # WalletProvider puis AppContextProvider
+├── App.tsx              # Assemblage des écrans et de l’aide
 ├── components/
-│   ├── layout/              # Navigation, en-tête, rôle, pied de page
-│   ├── dashboard/           # Indicateurs et alerte de réclamation
-│   ├── leases/              # Liste, ligne, création, détail et actions
-│   ├── help/                # Explication du fonctionnement
-│   └── ui/                  # Modale et notification réutilisables
-├── config/                  # Configuration wagmi, Base Sepolia uniquement
-├── providers/               # Providers wagmi et TanStack Query
-├── contexts/                # État partagé de la démonstration et hook sécurisé
-├── hooks/                   # Notifications
-├── services/                # Accès au stockage local des baux
-├── data/                    # Jeu de données de démonstration
-├── types/                   # Types partagés : bail, rôle, état et page
-├── utils/                   # Formatage des dates et montants
-└── styles/                  # Base, layout, composants et responsive
+│   ├── dashboard/       # Indicateurs indisponibles jusqu’aux lectures du contrat
+│   ├── leases/          # État indisponible des baux et litiges
+│   ├── layout/          # Navigation, en-tête et explication du projet
+│   ├── help/            # Fonctionnement prévu du contrat
+│   ├── wallet/          # Connexion réelle et gestion du portefeuille
+│   └── ui/              # Modale réutilisable
+├── config/              # Configuration wagmi sur Base Sepolia uniquement
+├── contexts/            # État d’interface : page, menu mobile et aide
+├── providers/           # Providers wagmi et TanStack Query
+├── types/               # Types de navigation
+├── utils/               # Messages d’erreur du portefeuille
+└── styles/              # Thème, composants et responsive
 ```
 
-Les composants reçoivent des propriétés typées et ne lisent pas directement le stockage, hormis la commande explicite de réinitialisation qui passe par le service. `AppDemoContextProvider` centralise l’état partagé et les transitions simulées ; `leaseStorage` isole leur persistance pour préparer une future source de données. Les champs temporaires des formulaires d’actions restent dans `LeaseActions`. `useNotification` gère la durée des notifications et nettoie son minuteur au démontage.
+`contexts/AppContext.tsx` suit la structure type explicite → contexte → hook sécurisé → provider. `AppContextProps` déclare les champs et les setters avec `Dispatch<SetStateAction<T>>`. `useAppContext()` déclenche une erreur hors de `AppContextProvider`. Les données de connexion restent dans wagmi ; aucun setter de fausse connexion n’est exposé.
 
-Pour faire évoluer un écran, modifier son composant et sa feuille de style dédiée. Pour modifier une transition de démonstration, intervenir dans `contexts/AppDemoContext.tsx`. Pour changer les exemples, modifier `data/demoLeases.ts`. Les composants `Modal` et `Toast` restent indépendants du domaine locatif.
-
-### Contexte de démonstration
-
-`contexts/AppDemoContext.tsx` définit le contrat explicite `AppDemoContextProps`, le contexte, le hook par défaut `useAppDemoContext()` et le composant nommé `AppDemoContextProvider`. Chaque setter utilise `Dispatch<SetStateAction<T>>` : il accepte une valeur ou une fonction calculant la valeur suivante. Les pages, rôles, statuts et filtres utilisent des unions typées.
-
-`WalletProvider` enveloppe le provider de démonstration et `App` dans `main.tsx`. Les composants connectés lisent uniquement les champs nécessaires via le hook, sans transmission de l’état partagé à travers `App`. Utiliser ce hook hors du provider déclenche une erreur explicite. Les composants génériques (`Modal`, `Toast`, `LeaseRow`) et les champs temporaires des formulaires restent indépendants du contexte.
-
-```tsx
-import useAppDemoContext, {
-  AppDemoContextProvider,
-} from "./contexts/AppDemoContext";
-import { WalletProvider } from "./providers/WalletProvider";
-
-function DemoRole() {
-  const { role, setRole } = useAppDemoContext();
-  return <button onClick={() => setRole("Locataire")}>{role}</button>;
-}
-
-<WalletProvider>
-  <AppDemoContextProvider>
-    <DemoRole />
-  </AppDemoContextProvider>
-</WalletProvider>;
-```
-
-Depuis `frontend/`, `npm test` vérifie la garde du hook et l’accès au contexte depuis les descendants du provider.
-
-## Connexion du portefeuille
-
-La connexion réelle utilise wagmi 3, viem et TanStack Query. `frontend/src/config/wagmi.ts` configure uniquement **Base Sepolia (84532)**, son transport HTTP public et les extensions injectées (découverte EIP-6963 incluse). Le bouton ouvre une liste des extensions disponibles. Aucun identifiant de projet ni secret n’est requis. WalletConnect et les connexions mobiles par QR code ne sont pas intégrés.
-
-Après connexion, le menu affiche l’adresse réelle au format checksum et le réseau. Si le réseau est différent, « Passer sur Base Sepolia » demande le changement au portefeuille. Les changements de compte, de réseau et la déconnexion sont suivis par wagmi ; la reconnexion au rechargement dépend de l’autorisation conservée par l’extension. « Déconnecter » ferme la session de l’application ; l’autorisation persistante du site peut aussi être retirée dans l’extension.
-
-Les baux, rôles affichés et soldes restent des données de démonstration locales ; ils ne sont ni authentifiés ni isolés par adresse. Connecter un portefeuille n’accorde aucun droit réel sur un contrat. Les actions simulées sont bloquées sans connexion ou hors Base Sepolia. Aucune signature, transaction, lecture de contrat ou demande de fonds n’est envoyée. Seuls la connexion et le changement de réseau sont demandés à l’extension.
-
-### Tests du portefeuille
+## Validation du frontend
 
 Depuis `frontend/` :
 
 ```sh
-npm test                    # contexte et messages d’erreur
+npm run build
+npm run format:check
+npm test
 npx playwright install chromium
-npm run test:e2e             # portefeuille EIP-1193 simulé, aucune clé nécessaire
+npm run test:e2e
 ```
 
-Si Chromium est déjà installé, `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e` permet de l’utiliser. Les tests couvrent l’absence d’extension, la connexion, les refus, les requêtes en attente, le changement de réseau et de compte, la reconnexion et la déconnexion. Ils vérifient aussi que les actions simulées n’envoient ni transaction ni demande de signature. Une validation manuelle avec votre extension reste nécessaire pour ses propres fenêtres de confirmation.
+Si Chromium est déjà installé : `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`.
+
+Les tests utilisent un portefeuille EIP-1193 simulé uniquement dans les fichiers de test, sans clé. Ils couvrent la connexion, les refus, les demandes en attente, les changements de compte et de réseau, la reconnexion, la déconnexion et l’absence de données fictives dans l’application. Une validation manuelle reste nécessaire pour les fenêtres propres à chaque extension.

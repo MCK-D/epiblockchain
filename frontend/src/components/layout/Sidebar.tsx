@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { CircleHelp, House, LayoutDashboard, Leaf, Scale } from "lucide-react";
-import useAppDemoContext from "../../contexts/AppDemoContext";
-import type { Page } from "../../types/lease";
+import useAppContext from "../../contexts/AppContext";
+import type { Page } from "../../types/navigation";
 
 const navigation: { label: Page; icon: LucideIcon }[] = [
   { label: "Vue d’ensemble", icon: LayoutDashboard },
@@ -10,8 +10,7 @@ const navigation: { label: Page; icon: LucideIcon }[] = [
 ];
 
 export function Sidebar() {
-  const { mobile, page, setPage, setMobile, leases, setHelp } =
-    useAppDemoContext();
+  const { mobile, page, setPage, setMobile, setHelp } = useAppContext();
   return (
     <aside className={mobile ? "sidebar open" : "sidebar"}>
       <a
@@ -29,7 +28,7 @@ export function Sidebar() {
       </a>
       <div className="account">
         <strong>Espace personnel</strong>
-        Compte de démonstration
+        Portefeuille personnel
       </div>
       <nav aria-label="Navigation principale">
         {navigation.map(({ icon: Icon, label }) => (
@@ -44,9 +43,6 @@ export function Sidebar() {
           >
             <Icon size={18} />
             {label}
-            {label === "Mes baux" && (
-              <span className="nav-count">{leases.length}</span>
-            )}
           </button>
         ))}
       </nav>
@@ -56,7 +52,6 @@ export function Sidebar() {
           Comprendre Caution
         </button>
         <div className="network">
-          <span className="live-dot" />
           Base Sepolia <small>Testnet</small>
         </div>
       </div>

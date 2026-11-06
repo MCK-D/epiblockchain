@@ -1,25 +1,16 @@
 import { AnimatePresence, MotionConfig } from "motion/react";
-import { ClaimNotice } from "./components/dashboard/ClaimNotice";
 import { DashboardSummary } from "./components/dashboard/DashboardSummary";
 import { HelpContent } from "./components/help/HelpContent";
 import { EducationFooter } from "./components/layout/EducationFooter";
 import { Header } from "./components/layout/Header";
 import { PageHeading } from "./components/layout/PageHeading";
-import { RoleSwitcher } from "./components/layout/RoleSwitcher";
 import { Sidebar } from "./components/layout/Sidebar";
-import { CreateLeaseForm } from "./components/leases/CreateLeaseForm";
-import { LeaseDetails } from "./components/leases/LeaseDetails";
 import { LeaseList } from "./components/leases/LeaseList";
 import { Modal } from "./components/ui/Modal";
-import { Toast } from "./components/ui/Toast";
-import useAppDemoContext from "./contexts/AppDemoContext";
+import useAppContext from "./contexts/AppContext";
+
 export function App() {
-  const app = useAppDemoContext();
-  const closeModal = () => {
-    app.setCreate(false);
-    app.setSelected(null);
-    app.setHelp(false);
-  };
+  const { page, help, setHelp } = useAppContext();
   return (
     <MotionConfig reducedMotion="user">
       <div className="app">
@@ -28,44 +19,21 @@ export function App() {
           <Header />
           <main>
             <PageHeading />
-            <RoleSwitcher />
-            {app.page === "Vue d’ensemble" && (
-              <>
-                <DashboardSummary />
-                {app.leases.some((lease) => lease.status === "Réclamation") && (
-                  <ClaimNotice />
-                )}
-              </>
-            )}
+            <p className="notice" role="status">
+              La connexion du portefeuille est disponible sur Base Sepolia. Les
+              données et opérations des baux ne sont pas encore reliées au
+              contrat.
+            </p>
+            {page === "Vue d’ensemble" && <DashboardSummary />}
             <LeaseList />
             <EducationFooter />
           </main>
         </div>
         <AnimatePresence>
-          {(app.create || app.selected || app.help) && (
-            <Modal
-              title={
-                app.create
-                  ? "Créer un bail"
-                  : app.help
-                    ? "Comprendre Caution"
-                    : "Détail du bail"
-              }
-              onClose={closeModal}
-            >
-              {app.create ? (
-                <CreateLeaseForm />
-              ) : app.help ? (
-                <HelpContent />
-              ) : (
-                <LeaseDetails />
-              )}
+          {help && (
+            <Modal title="Comprendre Caution" onClose={() => setHelp(false)}>
+              <HelpContent />
             </Modal>
-          )}
-        </AnimatePresence>
-        <AnimatePresence>
-          {app.toast && (
-            <Toast message={app.toast} onDismiss={() => app.setToast("")} />
           )}
         </AnimatePresence>
       </div>
