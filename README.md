@@ -2,7 +2,7 @@
 
 Projet du module « Blockchain & Decentralised Applications » (EPITECH, sujet escrow). Le locataire bloque la caution dans un contrat que personne ne contrôle ; à la fin du bail, le propriétaire réclame tout ou partie de la caution sur justificatifs, et un arbitre désigné à la création tranche le montant contesté.
 
-**État actuel** : le squelette du contrat `contracts/RentalDeposit.sol` est en place (types, délais, événements, erreurs, `withdraw`). Les transitions du bail sont déclarées mais revert encore avec `NotImplemented` : chaque partie les écrit avec ses tests. La connexion à un portefeuille navigateur est réelle (wagmi + viem). Les données et opérations des baux ne sont pas encore reliées au contrat : le frontend affiche des états indisponibles, sans exemples fictifs ni actions simulées.
+**État actuel** : dans `contracts/RentalDeposit.sol`, la partie 1 (création, annulation, versement) et la partie 2 (restitution, réclamation, acceptation, les trois délais, retrait) sont implémentées et testées, attaque par réentrance comprise. La partie 3 (`dispute`, `resolve`) revert encore avec `NotImplemented`. La connexion à un portefeuille navigateur est réelle (wagmi + viem) ; le frontend est relié à la partie 1 et affiche des états indisponibles pour le reste, sans exemples fictifs ni actions simulées.
 
 ## Fonctionnalité décentralisée
 
@@ -59,7 +59,14 @@ Chaque famille de failles vue au Day 3, appliquée à `RentalDeposit`.
 | Choix de l’arbitre | accepté | désigné par le propriétaire ; le contrat interdit seulement qu’il soit le propriétaire ou le locataire. Le risque maximal pour le locataire est la perte du montant contesté, et il connaît l’arbitre avant de verser |
 | Côté utilisateur | à faire (frontend) | afficher l’arbitre, la caution exacte et la date de fin avant la signature de `fund`, et ne demander aucune signature que l’interface n’explique pas |
 
-Les transitions étant encore en cours d’implémentation, chaque ligne « traité » doit être couverte par un test avant la soutenance intermédiaire, dont le test d’attaque par réentrance sur `withdraw` (partie 2).
+Tests qui couvrent les lignes « traité » (`test/RentalDeposit.ts`) :
+
+- **Réentrance** : un contrat locataire (`contracts/test/ReentrantTenant.sol`) rappelle `withdraw` depuis son `receive` alors que la caution d’un autre bail est dans le contrat. L’appel réentrant est refusé, tout le retrait est annulé et aucun solde ne bouge. Le même attaquant vide un coffre témoin qui envoie avant de remettre le solde à zéro, ce qui prouve que l’attaque fonctionne ; et si l’on retire `nonReentrant` et que l’on déplace la remise à zéro après l’envoi dans `RentalDeposit`, ce test est le seul à échouer.
+- **Déni de service** : un locataire-contrat qui refuse l’ETH ne bloque que son propre retrait ; les autres baux et le propriétaire retirent normalement.
+- **Contrôle d’accès** : chaque transition est testée avec chaque mauvais appelant.
+- **Délais** : chaque fenêtre est testée à la seconde près, sur sa dernière seconde et la suivante, ce qui vérifie qu’une action et son `...AfterTimeout` ne sont jamais possibles en même temps.
+
+`resolveAfterTimeout` n’est testé que sur son contrôle d’état tant que `dispute` (partie 3) n’existe pas : son délai sera testé avec la partie 3.
 
 ## Organisation du dépôt
 
