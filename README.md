@@ -2,7 +2,7 @@
 
 Projet du module « Blockchain & Decentralised Applications » (EPITECH, sujet escrow). Le locataire bloque la caution dans un contrat que personne ne contrôle ; à la fin du bail, le propriétaire réclame tout ou partie de la caution sur justificatifs, et un arbitre désigné à la création tranche le montant contesté.
 
-**État actuel** : dans `contracts/RentalDeposit.sol`, la partie 1 (création, annulation, versement) et la partie 2 (restitution, réclamation, acceptation, les trois délais, retrait) sont implémentées et testées, attaque par réentrance comprise. La partie 3 (`dispute`, `resolve`) revert encore avec `NotImplemented`. La connexion à un portefeuille navigateur est réelle (wagmi + viem) ; le frontend est relié à la partie 1 et affiche des états indisponibles pour le reste, sans exemples fictifs ni actions simulées.
+**État actuel** : le contrat `contracts/RentalDeposit.sol` est complet : partie 1 (création, annulation, versement), partie 2 (restitution, réclamation, acceptation, les trois délais, retrait) et partie 3 (contestation, arbitrage), toutes testées, attaque par réentrance comprise. La connexion à un portefeuille navigateur est réelle (wagmi + viem) ; le frontend est relié à la partie 1 et affiche des états indisponibles pour le reste, sans exemples fictifs ni actions simulées.
 
 ## Fonctionnalité décentralisée
 
@@ -65,8 +65,7 @@ Tests qui couvrent les lignes « traité » (`test/RentalDeposit.ts`) :
 - **Déni de service** : un locataire-contrat qui refuse l’ETH ne bloque que son propre retrait ; les autres baux et le propriétaire retirent normalement.
 - **Contrôle d’accès** : chaque transition est testée avec chaque mauvais appelant.
 - **Délais** : chaque fenêtre est testée à la seconde près, sur sa dernière seconde et la suivante, ce qui vérifie qu’une action et son `...AfterTimeout` ne sont jamais possibles en même temps.
-
-`resolveAfterTimeout` n’est testé que sur son contrôle d’état tant que `dispute` (partie 3) n’existe pas : son délai sera testé avec la partie 3.
+- **Arbitre limité au montant contesté** : `resolve` est refusé sur un bail qui n’est pas en litige, et refusé s’il attribue au propriétaire plus que `claimAmount`.
 
 ## Organisation du dépôt
 

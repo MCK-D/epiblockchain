@@ -16,6 +16,7 @@ const Status = {
   Proposed: 0,
   Active: 1,
   Claimed: 2,
+  Disputed: 3,
   Closed: 4,
   Cancelled: 5,
 } as const;
@@ -67,6 +68,15 @@ describe("RentalDeposit", async function () {
     await networkHelpers.time.setNextBlockTimestamp(endDate);
     await rentalDeposit.write.claim([1n, claimAmount, CLAIM_HASH]);
     return { rentalDeposit, endDate, claimedAt: endDate };
+  }
+
+  // Lease 1 disputed by the tenant one second after the claim (Disputed).
+  async function deployWithDisputedLease() {
+    const { rentalDeposit, claimedAt } = await deployWithClaimedLease();
+    const disputedAt = claimedAt + 1n;
+    await networkHelpers.time.setNextBlockTimestamp(disputedAt);
+    await rentalDeposit.write.dispute([1n], { account: tenant.account });
+    return { rentalDeposit, claimedAt, disputedAt };
   }
 
   function balanceOf(address: `0x${string}`) {
@@ -667,9 +677,184 @@ describe("RentalDeposit", async function () {
     });
   });
 
+  describe("dispute", function () {
+    it("lets the tenant contest the claim within the response window", async function () {
+      const { rentalDeposit, claimedAt } = await deployWithClaimedLease();
+      await networkHelpers.time.setNextBlockTimestamp(claimedAt + WINDOW);
+      await viem.assertions.emitWithArgs(
+        rentalDeposit.write.dispute([1n], { account: tenant.account }),
+        rentalDeposit,
+        "ClaimDisputed",
+        [1n],
+      );
+      const lease = await rentalDeposit.read.getLease([1n]);
+      assert.equal(lease.status, Status.Disputed);
+      assert.equal(lease.disputedAt, claimedAt + WINDOW);
+      // Disputing moves no money: the claimed amount stays held.
+      assert.equal(
+        await rentalDeposit.read.balances([landlord.account.address]),
+        0n,
+      );
+    });
+
+    it("rejects a dispute after the response window", async function () {
+      const { rentalDeposit, claimedAt } = await deployWithClaimedLease();
+      await networkHelpers.time.setNextBlockTimestamp(claimedAt + WINDOW + 1n);
+      await assert.rejects(
+        rentalDeposit.write.dispute([1n], { account: tenant.account }),
+        /ResponseWindowExpired/,
+      );
+    });
+
+    it("rejects anyone but the tenant", async function () {
+      const { rentalDeposit } = await deployWithClaimedLease();
+      for (const caller of [landlord, arbiter, stranger]) {
+        await assert.rejects(
+          rentalDeposit.write.dispute([1n], { account: caller.account }),
+          /NotTenant/,
+        );
+      }
+    });
+
+    it("rejects a lease with no claim, and a second dispute", async function () {
+      const { rentalDeposit } = await deployWithActiveLease();
+      await assert.rejects(
+        rentalDeposit.write.dispute([1n], { account: tenant.account }),
+        /WrongStatus/,
+      );
+
+      const disputed = await deployWithDisputedLease();
+      await assert.rejects(
+        disputed.rentalDeposit.write.dispute([1n], { account: tenant.account }),
+        /WrongStatus/,
+      );
+    });
+  });
+
+  describe("resolve", function () {
+    it("lets the arbiter split the claimed amount, and only the claimed amount", async function () {
+      const { rentalDeposit } = await deployWithDisputedLease();
+      const toLandlord = parseEther("0.1");
+      await viem.assertions.emitWithArgs(
+        rentalDeposit.write.resolve([1n, toLandlord], { account: arbiter.account }),
+        rentalDeposit,
+        "DisputeResolved",
+        [1n, toLandlord, CLAIM_AMOUNT - toLandlord, false],
+      );
+      const lease = await rentalDeposit.read.getLease([1n]);
+      assert.equal(lease.status, Status.Closed);
+
+      assert.equal(await withdrawAndMeasure(rentalDeposit, landlord), toLandlord);
+      // The tenant gets the unclaimed part (credited at claim time) plus its share.
+      assert.equal(
+        await withdrawAndMeasure(rentalDeposit, tenant),
+        DEPOSIT - toLandlord,
+      );
+      // The arbiter is never paid out of the deposit.
+      assert.equal(
+        await rentalDeposit.read.balances([arbiter.account.address]),
+        0n,
+      );
+      assert.equal(await balanceOf(rentalDeposit.address), 0n);
+    });
+
+    for (const toLandlord of [0n, CLAIM_AMOUNT]) {
+      it(`accepts a split at the boundary (${toLandlord} wei to the landlord)`, async function () {
+        const { rentalDeposit } = await deployWithDisputedLease();
+        await rentalDeposit.write.resolve([1n, toLandlord], {
+          account: arbiter.account,
+        });
+        assert.equal(
+          await rentalDeposit.read.balances([landlord.account.address]),
+          toLandlord,
+        );
+      });
+    }
+
+    it("rejects giving the landlord more than the claimed amount", async function () {
+      const { rentalDeposit } = await deployWithDisputedLease();
+      await assert.rejects(
+        rentalDeposit.write.resolve([1n, CLAIM_AMOUNT + 1n], {
+          account: arbiter.account,
+        }),
+        /InvalidSplit/,
+      );
+    });
+
+    it("rejects anyone but the arbiter", async function () {
+      const { rentalDeposit } = await deployWithDisputedLease();
+      for (const caller of [landlord, tenant, stranger]) {
+        await assert.rejects(
+          rentalDeposit.write.resolve([1n, 0n], { account: caller.account }),
+          /NotArbiter/,
+        );
+      }
+    });
+
+    it("rejects the arbiter on a lease that is not in dispute", async function () {
+      // The arbiter has no power over undisputed funds.
+      const { rentalDeposit } = await deployWithActiveLease();
+      await assert.rejects(
+        rentalDeposit.write.resolve([1n, 0n], { account: arbiter.account }),
+        /WrongStatus/,
+      );
+
+      const claimed = await deployWithClaimedLease();
+      await assert.rejects(
+        claimed.rentalDeposit.write.resolve([1n, 0n], { account: arbiter.account }),
+        /WrongStatus/,
+      );
+    });
+
+    it("accepts a decision on the last second of the arbitration window", async function () {
+      const { rentalDeposit, disputedAt } = await deployWithDisputedLease();
+      await networkHelpers.time.setNextBlockTimestamp(disputedAt + WINDOW);
+      await rentalDeposit.write.resolve([1n, 0n], { account: arbiter.account });
+      const lease = await rentalDeposit.read.getLease([1n]);
+      assert.equal(lease.status, Status.Closed);
+    });
+
+    it("rejects a decision after the arbitration window", async function () {
+      const { rentalDeposit, disputedAt } = await deployWithDisputedLease();
+      await networkHelpers.time.setNextBlockTimestamp(disputedAt + WINDOW + 1n);
+      await assert.rejects(
+        rentalDeposit.write.resolve([1n, 0n], { account: arbiter.account }),
+        /ArbitrationWindowExpired/,
+      );
+    });
+  });
+
   describe("resolveAfterTimeout", function () {
-    // Reaching Disputed needs `dispute` (part 3). Until it lands, only the status
-    // check can be exercised; the timeout itself is tested with part 3.
+    it("lets anyone give the claimed amount back to the tenant when the arbiter is silent", async function () {
+      const { rentalDeposit, disputedAt } = await deployWithDisputedLease();
+      await networkHelpers.time.setNextBlockTimestamp(disputedAt + WINDOW + 1n);
+      await viem.assertions.emitWithArgs(
+        rentalDeposit.write.resolveAfterTimeout([1n], { account: stranger.account }),
+        rentalDeposit,
+        "DisputeResolved",
+        [1n, 0n, CLAIM_AMOUNT, true],
+      );
+      const lease = await rentalDeposit.read.getLease([1n]);
+      assert.equal(lease.status, Status.Closed);
+      assert.equal(
+        await rentalDeposit.read.balances([tenant.account.address]),
+        DEPOSIT,
+      );
+      assert.equal(
+        await rentalDeposit.read.balances([landlord.account.address]),
+        0n,
+      );
+    });
+
+    it("rejects it while the arbiter can still decide", async function () {
+      const { rentalDeposit, disputedAt } = await deployWithDisputedLease();
+      await networkHelpers.time.setNextBlockTimestamp(disputedAt + WINDOW);
+      await assert.rejects(
+        rentalDeposit.write.resolveAfterTimeout([1n]),
+        /ArbitrationWindowOpen/,
+      );
+    });
+
     it("rejects a lease that is not Disputed", async function () {
       const { rentalDeposit, claimedAt } = await deployWithClaimedLease();
       await networkHelpers.time.increaseTo(claimedAt + 3n * WINDOW);

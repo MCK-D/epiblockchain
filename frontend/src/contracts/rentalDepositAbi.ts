@@ -94,11 +94,6 @@ export const rentalDepositAbi = [
   },
   {
     inputs: [],
-    name: "NotImplemented",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "NotLandlord",
     type: "error",
   },
