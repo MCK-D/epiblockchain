@@ -224,8 +224,13 @@ contract RentalDeposit is ReentrancyGuard {
     /// @dev Vérifier : NotLandlord, WrongStatus. Créditer deposit au locataire.
     /// Émettre DepositReleased(afterTimeout = false).
     function releaseAll(uint256 leaseId) external {
-        _getLease(leaseId);
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        if (msg.sender != lease.landlord) revert NotLandlord();
+        _requireStatus(leaseId, lease, Status.Active);
+
+        lease.status = Status.Closed;
+        _credit(lease.tenant, lease.deposit);
+        emit DepositReleased(leaseId, lease.deposit, false);
     }
 
     /// @notice Le propriétaire réclame claimAmount sur justificatifs (Active → Claimed).
@@ -234,42 +239,73 @@ contract RentalDeposit is ReentrancyGuard {
     /// Créditer immédiatement deposit - claimAmount au locataire, enregistrer
     /// claimedAt. Émettre DepositClaimed.
     function claim(uint256 leaseId, uint256 claimAmount, bytes32 claimHash) external {
-        _getLease(leaseId);
-        claimAmount;
-        claimHash;
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        if (msg.sender != lease.landlord) revert NotLandlord();
+        _requireStatus(leaseId, lease, Status.Active);
+        if (block.timestamp < lease.endDate) revert LeaseNotEnded();
+        if (block.timestamp > lease.endDate + claimWindow) revert ClaimWindowExpired();
+        if (claimAmount == 0 || claimAmount > lease.deposit) revert InvalidClaimAmount();
+
+        uint256 refundedToTenant = lease.deposit - claimAmount;
+        lease.status = Status.Claimed;
+        lease.claimAmount = claimAmount;
+        lease.claimHash = claimHash;
+        lease.claimedAt = uint64(block.timestamp);
+        _credit(lease.tenant, refundedToTenant);
+
+        emit DepositClaimed(leaseId, claimAmount, refundedToTenant, claimHash);
     }
 
     /// @notice Le locataire accepte la réclamation (Claimed → Closed).
     /// @dev Vérifier : NotTenant, WrongStatus. Créditer claimAmount au propriétaire.
     /// Émettre ClaimAccepted(afterTimeout = false).
     function acceptClaim(uint256 leaseId) external {
-        _getLease(leaseId);
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        if (msg.sender != lease.tenant) revert NotTenant();
+        _requireStatus(leaseId, lease, Status.Claimed);
+
+        lease.status = Status.Closed;
+        _credit(lease.landlord, lease.claimAmount);
+        emit ClaimAccepted(leaseId, lease.claimAmount, false);
     }
 
     /// @notice N'importe qui : le propriétaire n'a pas réclamé à temps (Active → Closed).
     /// @dev Vérifier : WrongStatus, ClaimWindowOpen. Tout au locataire.
     /// Émettre DepositReleased(afterTimeout = true).
     function refundAfterTimeout(uint256 leaseId) external {
-        _getLease(leaseId);
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        _requireStatus(leaseId, lease, Status.Active);
+        if (block.timestamp <= lease.endDate + claimWindow) revert ClaimWindowOpen();
+
+        lease.status = Status.Closed;
+        _credit(lease.tenant, lease.deposit);
+        emit DepositReleased(leaseId, lease.deposit, true);
     }
 
     /// @notice N'importe qui : le locataire n'a pas répondu à temps (Claimed → Closed).
     /// @dev Vérifier : WrongStatus, ResponseWindowOpen. claimAmount au propriétaire.
     /// Émettre ClaimAccepted(afterTimeout = true).
     function acceptAfterTimeout(uint256 leaseId) external {
-        _getLease(leaseId);
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        _requireStatus(leaseId, lease, Status.Claimed);
+        if (block.timestamp <= lease.claimedAt + responseWindow) revert ResponseWindowOpen();
+
+        lease.status = Status.Closed;
+        _credit(lease.landlord, lease.claimAmount);
+        emit ClaimAccepted(leaseId, lease.claimAmount, true);
     }
 
     /// @notice N'importe qui : l'arbitre n'a pas tranché à temps (Disputed → Closed).
     /// @dev Vérifier : WrongStatus, ArbitrationWindowOpen. Règle par défaut retenue :
     /// le montant contesté revient au locataire. Émettre DisputeResolved(0, claimAmount, true).
     function resolveAfterTimeout(uint256 leaseId) external {
-        _getLease(leaseId);
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        _requireStatus(leaseId, lease, Status.Disputed);
+        if (block.timestamp <= lease.disputedAt + arbitrationWindow) revert ArbitrationWindowOpen();
+
+        lease.status = Status.Closed;
+        _credit(lease.tenant, lease.claimAmount);
+        emit DisputeResolved(leaseId, 0, lease.claimAmount, true);
     }
 
     // ------------------------------------------------------------------
