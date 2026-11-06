@@ -16,8 +16,6 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 /// - une action « dans le délai » est permise tant que `block.timestamp <= deadline` ;
 /// - la fonction `...AfterTimeout` correspondante est permise si `block.timestamp > deadline`.
 /// Les deux ne peuvent donc jamais être possibles au même moment.
-///
-/// Les fonctions qui revert avec `NotImplemented` sont à écrire par la partie indiquée.
 contract RentalDeposit is ReentrancyGuard {
     // ------------------------------------------------------------------
     // Types
@@ -108,9 +106,6 @@ contract RentalDeposit is ReentrancyGuard {
     // ------------------------------------------------------------------
     // Erreurs (une par règle)
     // ------------------------------------------------------------------
-
-    /// @dev Temporaire : marque les fonctions encore à écrire. À supprimer à la fin.
-    error NotImplemented();
 
     error InvalidWindow();
     error LeaseNotFound(uint256 leaseId);
@@ -316,8 +311,14 @@ contract RentalDeposit is ReentrancyGuard {
     /// @dev Vérifier : NotTenant, WrongStatus, ResponseWindowExpired.
     /// Enregistrer disputedAt. Émettre ClaimDisputed.
     function dispute(uint256 leaseId) external {
-        _getLease(leaseId);
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        if (msg.sender != lease.tenant) revert NotTenant();
+        _requireStatus(leaseId, lease, Status.Claimed);
+        if (block.timestamp > lease.claimedAt + responseWindow) revert ResponseWindowExpired();
+
+        lease.status = Status.Disputed;
+        lease.disputedAt = uint64(block.timestamp);
+        emit ClaimDisputed(leaseId);
     }
 
     /// @notice L'arbitre répartit le montant contesté (Disputed → Closed).
@@ -326,9 +327,19 @@ contract RentalDeposit is ReentrancyGuard {
     /// locataire ; l'arbitre ne touche jamais à la part non contestée.
     /// Émettre DisputeResolved(toLandlord, claimAmount - toLandlord, false).
     function resolve(uint256 leaseId, uint256 toLandlord) external {
-        _getLease(leaseId);
-        toLandlord;
-        revert NotImplemented();
+        Lease storage lease = _getLease(leaseId);
+        if (msg.sender != lease.arbiter) revert NotArbiter();
+        _requireStatus(leaseId, lease, Status.Disputed);
+        if (block.timestamp > lease.disputedAt + arbitrationWindow) {
+            revert ArbitrationWindowExpired();
+        }
+        if (toLandlord > lease.claimAmount) revert InvalidSplit();
+
+        uint256 toTenant = lease.claimAmount - toLandlord;
+        lease.status = Status.Closed;
+        _credit(lease.landlord, toLandlord);
+        _credit(lease.tenant, toTenant);
+        emit DisputeResolved(leaseId, toLandlord, toTenant, false);
     }
 
     // ------------------------------------------------------------------

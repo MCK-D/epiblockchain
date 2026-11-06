@@ -33,7 +33,6 @@ const messages: Record<string, string> = {
     "La part du propriétaire ne peut pas dépasser le montant contesté.",
   NothingToWithdraw: "Aucun solde à retirer.",
   TransferFailed: "Le virement a échoué.",
-  NotImplemented: "Cette action n’est pas encore implémentée dans le contrat.",
 };
 
 export function contractErrorMessage(error: unknown): string {

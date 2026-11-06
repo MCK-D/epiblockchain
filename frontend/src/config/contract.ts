@@ -3,4 +3,5 @@ import type { Address } from "viem";
 // Adresse de RentalDeposit sur Base Sepolia. À renseigner après le déploiement,
 // depuis ignition/deployments/chain-84532/deployed_addresses.json.
 // Tant qu'elle est absente, l'interface affiche le contrat comme non déployé.
-export const rentalDepositAddress: Address | undefined = undefined;
+export const rentalDepositAddress: Address | undefined =
+  "0x4b7F624b7e4c30F825e7f106b8FF5F29c324504C";
