@@ -10,7 +10,8 @@
     "format": "prettier --write src tests *.json *.mjs vite.config.ts",
     "format:check": "prettier --check src tests *.json *.mjs vite.config.ts",
     "test": "node --test tests/*.test.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "abi": "node scripts/sync-abi.mjs && prettier --write src/contracts/rentalDepositAbi.ts"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

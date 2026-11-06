@@ -51,3 +51,59 @@ h2 {
   font-size: 14px;
   margin-bottom: 8px;
 }
+
+/* Lease table */
+.lease-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.lease-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.lease-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.lease-table tr:last-child td {
+  border-bottom: 0;
+}
+.read-error {
+  color: var(--disputed);
+}
+
+/* Status of the lease in the contract's state machine */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 600;
+}
+.status-0 {
+  color: var(--proposed);
+  background: var(--proposed-bg);
+}
+.status-1 {
+  color: var(--active);
+  background: var(--active-bg);
+}
+.status-2 {
+  color: var(--claimed);
+  background: var(--claimed-bg);
+}
+.status-3 {
+  color: var(--disputed);
+  background: var(--disputed-bg);
+}
+.status-4,
+.status-5 {
+  color: var(--closed);
+  background: var(--closed-bg);
+}

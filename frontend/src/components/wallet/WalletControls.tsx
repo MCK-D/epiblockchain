@@ -121,9 +121,9 @@ export function WalletControls() {
                 : "Connecter un portefeuille"}
             </h2>
             <p>
-              La connexion est réelle. Les opérations des baux ne sont pas
-              encore disponibles. Aucune signature ni transaction n’est
-              demandée.
+              La connexion est réelle. Chaque opération sur un bail est une
+              transaction que vous confirmez dans votre portefeuille ; aucune
+              n’est envoyée sans votre accord.
             </p>
             {connection.isConnected && address ? (
               <>
