@@ -115,6 +115,8 @@ Ils ne servent qu’au déploiement sur Base Sepolia, pas aux tests locaux. Sans
 npx hardhat ignition deploy ignition/modules/RentalDeposit.ts --network baseSepolia --parameters ignition/parameters/demo.json --verify
 ```
 
+**Déploiement actuel (Base Sepolia, délais de démonstration de 2 minutes)** : [`0x4b7F624b7e4c30F825e7f106b8FF5F29c324504C`](https://sepolia.basescan.org/address/0x4b7F624b7e4c30F825e7f106b8FF5F29c324504C#code), code source vérifié sur Basescan, Blockscout et Sourcify. L’adresse est enregistrée dans `ignition/deployments/chain-84532/deployed_addresses.json` et reprise par le frontend dans `frontend/src/config/contract.ts`.
+
 Frontend :
 
 ```sh
