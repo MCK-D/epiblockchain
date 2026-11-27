@@ -3,7 +3,9 @@ import type { ReactNode } from "react";
 import { useConnection } from "wagmi";
 import useAppContext from "../../contexts/AppContext";
 import { useLeases } from "../../hooks/useLeases";
+import type { Lease } from "../../types/lease";
 import { formatDate, formatEth, statusLabel } from "../../utils/format";
+import { DISPUTED } from "../../utils/leaseDeadlines";
 import { rolesOf } from "../../utils/leaseRoles";
 
 function Empty({ title, children }: { title: string; children: ReactNode }) {
@@ -20,23 +22,13 @@ export function LeaseList() {
   const { page, setSelected } = useAppContext();
   const { address } = useConnection();
   const state = useLeases();
+  // La page d'arbitrage ne montre que les litiges dont l'adresse connectée est
+  // l'arbitre ; les autres pages, tous les baux où elle a un rôle.
   const arbitration = page === "Arbitrage";
-
-  // La page d'arbitrage appartient à la partie 3.
-  if (arbitration)
-    return (
-      <section className="lease-section">
-        <div className="section-heading">
-          <h2>Litiges à examiner</h2>
-        </div>
-        <div className="table-scroll">
-          <Empty title="Litiges indisponibles">
-            L’arbitrage n’est pas encore intégré. Les litiges ne peuvent pas
-            être chargés pour le moment.
-          </Empty>
-        </div>
-      </section>
-    );
+  const concerns = (lease: Lease) =>
+    arbitration
+      ? lease.status === DISPUTED && rolesOf(lease, address).includes("Arbitre")
+      : rolesOf(lease, address).length > 0;
 
   let content: ReactNode;
   if (state.status === "undeployed")
@@ -68,14 +60,19 @@ export function LeaseList() {
     );
   else {
     const mine = state.leases.filter(
-      (read) =>
-        read.status === "failure" || rolesOf(read.lease, address).length > 0,
+      (read) => read.status === "failure" || concerns(read.lease),
     );
     content =
       mine.length === 0 ? (
-        <Empty title="Aucun bail">
-          Aucun bail du contrat ne concerne votre adresse.
-        </Empty>
+        arbitration ? (
+          <Empty title="Aucun litige à trancher">
+            Aucun bail en litige ne vous désigne comme arbitre.
+          </Empty>
+        ) : (
+          <Empty title="Aucun bail">
+            Aucun bail du contrat ne concerne votre adresse.
+          </Empty>
+        )
       ) : (
         <table className="lease-table">
           <thead>
@@ -125,7 +122,7 @@ export function LeaseList() {
   return (
     <section className="lease-section">
       <div className="section-heading">
-        <h2>Mes baux</h2>
+        <h2>{arbitration ? "Litiges à examiner" : "Mes baux"}</h2>
       </div>
       <div className="table-scroll">{content}</div>
     </section>

@@ -12,7 +12,7 @@ after(() => server.close());
 
 const { availableActions, deadlinesOf, formatRemaining } =
   await server.ssrLoadModule("/src/utils/leaseDeadlines.ts");
-const { validateClaimForm } = await server.ssrLoadModule(
+const { validateClaimForm, validateSplit } = await server.ssrLoadModule(
   "/src/utils/claimForm.ts",
 );
 
@@ -83,11 +83,16 @@ test("the tenant and strangers only see the refund once the claim window has pas
   }
 });
 
-test("a Claimed lease: the tenant can accept, anyone can settle once the response window has passed", () => {
+test("a Claimed lease: the tenant can accept or dispute in time, anyone can settle once the response window has passed", () => {
   const claimed = lease({ status: 2, claimedAt: endDate + 5n });
   assert.deepEqual(
     availableActions(claimed, ["Locataire"], windows, endDate + 125n),
-    ["acceptClaim"],
+    ["acceptClaim", "dispute"],
+  );
+  // Past the response window the tenant can still accept, but no longer dispute.
+  assert.deepEqual(
+    availableActions(claimed, ["Locataire"], windows, endDate + 126n),
+    ["acceptClaim", "acceptAfterTimeout"],
   );
   assert.deepEqual(availableActions(claimed, [], windows, endDate + 125n), []);
   assert.deepEqual(availableActions(claimed, [], windows, endDate + 126n), [
@@ -110,6 +115,41 @@ test("a Disputed lease: anyone can settle once the arbitration window has passed
   assert.deepEqual(availableActions(disputed, [], windows, endDate + 128n), [
     "resolveAfterTimeout",
   ]);
+});
+
+test("a Disputed lease: only the arbiter can resolve, and only within the arbitration window", () => {
+  const disputed = lease({
+    status: 3,
+    claimedAt: endDate,
+    disputedAt: endDate + 7n,
+  });
+  assert.deepEqual(
+    availableActions(disputed, ["Arbitre"], windows, endDate + 127n),
+    ["resolve"],
+  );
+  assert.deepEqual(
+    availableActions(disputed, ["Arbitre"], windows, endDate + 128n),
+    ["resolveAfterTimeout"],
+  );
+  for (const roles of [["Propriétaire"], ["Locataire"]]) {
+    assert.deepEqual(
+      availableActions(disputed, roles, windows, endDate + 127n),
+      [],
+    );
+  }
+});
+
+test("validateSplit accepts 0 up to the claimed amount, and nothing above", () => {
+  const claimAmount = parseEther("0.00004");
+  assert.deepEqual(validateSplit("0", claimAmount), { toLandlord: 0n });
+  assert.deepEqual(validateSplit("0,00004", claimAmount), {
+    toLandlord: claimAmount,
+  });
+  assert.equal(
+    validateSplit("0.00005", claimAmount).error,
+    "La part du propriétaire ne peut pas dépasser le montant contesté.",
+  );
+  assert.equal(validateSplit("abc", claimAmount).error, "Montant invalide.");
 });
 
 test("Proposed, Closed and Cancelled leases offer no part 2 action", () => {

@@ -8,6 +8,7 @@ import { useNow, useWindows } from "../../hooks/useLeaseTiming";
 import type { Lease, Role } from "../../types/lease";
 import {
   validateClaimForm,
+  validateSplit,
   type ClaimFormField,
   type ClaimFormValues,
 } from "../../utils/claimForm";
@@ -24,14 +25,15 @@ import {
 } from "../../utils/leaseDeadlines";
 import { TransactionStatus } from "./TransactionStatus";
 
-// Transitions de la partie 2 qui ne prennent que l'identifiant du bail.
-type LeaseIdFunction = Exclude<EndOfLeaseAction, "claim">;
+// Transitions qui ne prennent que l'identifiant du bail.
+type LeaseIdFunction = Exclude<EndOfLeaseAction, "claim" | "resolve">;
 
 const emptyClaim: ClaimFormValues = { amount: "", claimHash: undefined };
 
-// Partie 2 : restitution, réclamation, acceptation et délais expirés. Les
-// fonds ne sont jamais envoyés ici : chaque issue crédite un solde, que le
-// bénéficiaire retire depuis la vue d'ensemble.
+// Fin du bail (parties 2 et 3) : restitution, réclamation, acceptation,
+// contestation, arbitrage et délais expirés. Les fonds ne sont jamais envoyés
+// ici : chaque issue crédite un solde, que le bénéficiaire retire depuis la
+// vue d'ensemble.
 export function EndOfLeaseActions({
   contract,
   lease,
@@ -53,6 +55,8 @@ export function EndOfLeaseActions({
     Partial<Record<ClaimFormField, string>>
   >({});
   const [fileName, setFileName] = useState("");
+  const [split, setSplit] = useState("");
+  const [splitError, setSplitError] = useState<string | undefined>();
 
   if (!windows) return <p role="status">Lecture des délais du contrat…</p>;
 
@@ -63,7 +67,28 @@ export function EndOfLeaseActions({
   const actions = availableActions(lease, roles, windows, now);
   const can = (name: EndOfLeaseAction) => actions.includes(name);
   const disabled = action.busy || !onBaseSepolia || !account;
-  const isTenant = roles.includes("Locataire");
+
+  // L'arbitre ne répartit que le montant contesté (InvalidSplit au-delà).
+  async function submitSplit(event: FormEvent) {
+    event.preventDefault();
+    const result = validateSplit(split, lease.claimAmount);
+    if (result.error !== undefined) {
+      setSplitError(result.error);
+      return;
+    }
+    const receipt = await action.run(async (config) => {
+      const { request } = await simulateContract(config, {
+        address: contract,
+        abi: rentalDepositAbi,
+        functionName: "resolve",
+        args: [lease.id, result.toLandlord],
+        account,
+        chainId: baseSepolia.id,
+      });
+      return writeContract(config, request);
+    });
+    if (receipt) setSplit("");
+  }
 
   // simulateContract rejoue l'appel avant la signature : un revert (délai pas
   // encore expiré, mauvais état…) est décodé sans payer de frais.
@@ -250,12 +275,65 @@ export function EndOfLeaseActions({
         </button>
       )}
 
-      {lease.status === CLAIMED && isTenant && (
-        <p className="notice">
-          La contestation devant l’arbitre sera ajoutée avec la partie 3 de
-          l’interface.
-        </p>
+      {can("dispute") && (
+        <>
+          <p className="notice">
+            Vous contestez ? L’arbitre désigné dans le bail répartira les{" "}
+            {formatEth(lease.claimAmount)} contestés, et rien d’autre : la part
+            déjà rendue reste à vous. S’il ne tranche pas à temps, le montant
+            contesté vous revient.
+          </p>
+          <button
+            className="secondary"
+            disabled={disabled}
+            onClick={() => send("dispute")}
+          >
+            Contester devant l’arbitre
+          </button>
+        </>
       )}
+
+      {can("resolve") && (
+        <form onSubmit={submitSplit} noValidate>
+          <p>
+            Vous êtes l’arbitre de ce litige. Indiquez la part des{" "}
+            {formatEth(lease.claimAmount)} contestés qui revient au propriétaire
+            ; le reste ira au locataire.
+          </p>
+          <label>
+            Part du propriétaire (ETH, entre 0 et {formatEth(lease.claimAmount)}
+            )
+            <input
+              value={split}
+              onChange={(e) => {
+                setSplit(e.target.value);
+                setSplitError(undefined);
+              }}
+              placeholder="0"
+              inputMode="decimal"
+              aria-invalid={splitError ? true : undefined}
+              aria-describedby={splitError ? "split-error" : undefined}
+            />
+            {splitError && (
+              <span className="field-error" id="split-error">
+                {splitError}
+              </span>
+            )}
+          </label>
+          <button className="primary" type="submit" disabled={disabled}>
+            Trancher le litige
+          </button>
+        </form>
+      )}
+
+      {lease.status === DISPUTED &&
+        !can("resolve") &&
+        !can("resolveAfterTimeout") && (
+          <p className="notice">
+            Litige en cours : seul l’arbitre peut répartir le montant contesté,
+            jusqu’au {formatDate(arbitrationDeadline)}.
+          </p>
+        )}
 
       {can("refundAfterTimeout") && (
         <button
