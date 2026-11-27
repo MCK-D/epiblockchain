@@ -183,7 +183,13 @@ test("pending requests disable repeated connections", async ({ page }) => {
   await expect(page.getByText(account, { exact: true })).toBeVisible();
 });
 
-test("contract data stays unavailable and legacy demo storage is ignored", async ({
+// Cuts the page off from the Base Sepolia RPC endpoint, so every contract read
+// fails the same way on any machine and in CI, without touching the network.
+async function blockChainReads(page) {
+  await page.route("https://sepolia.base.org/**", (route) => route.abort());
+}
+
+test("a failed contract read shows as a failure, never as an empty list or a zero", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -199,39 +205,49 @@ test("contract data stays unavailable and legacy demo storage is ignored", async
       ]),
     );
   });
+  await blockChainReads(page);
   await page.goto("/");
+
+  // Reads are retried before failing: wait for the error state.
   await expect(
-    page.getByRole("heading", { name: "Baux indisponibles" }),
-  ).toBeVisible();
+    page.getByRole("heading", { name: "Lecture du contrat impossible" }),
+  ).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText("Ce n’est pas une liste vide.")).toBeVisible();
   await expect(
     page.getByText("Legacy sample lease", { exact: true }),
   ).toHaveCount(0);
-  await expect(page.getByLabel("Montant indisponible")).toHaveText("—");
-  await expect(page.getByLabel("Solde indisponible")).toHaveText("—");
+
+  const ledger = page.getByRole("region", {
+    name: "Fonds détenus par le contrat",
+  });
+  await expect(
+    ledger.getByText("Lecture impossible. Rechargez la page."),
+  ).toHaveCount(2, { timeout: 20_000 }); // ETH held and open leases
+  await expect(ledger.getByText(/0 ETH/)).toHaveCount(0);
+
   await expect(
     page.getByRole("button", { name: "Créer un bail", exact: true }),
   ).toBeDisabled();
-  await expect(page.getByRole("group", { name: "Rôle affiché" })).toHaveCount(
-    0,
-  );
-  await page.getByRole("button", { name: "Mes baux", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "Baux indisponibles" }),
-  ).toBeVisible();
+
   await page.getByRole("button", { name: "Arbitrage", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Litiges indisponibles" }),
+    page.getByRole("heading", { name: "Litiges à examiner" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Lecture du contrat impossible" }),
+  ).toBeVisible({ timeout: 20_000 });
+
   await page.reload();
   await expect(
     page.getByText("Legacy sample lease", { exact: true }),
   ).toHaveCount(0);
 });
 
-test("connecting a real wallet does not populate leases or enable unimplemented actions", async ({
+test("connecting a real wallet enables lease creation but never signs or sends on its own", async ({
   page,
 }) => {
   await injectWallet(page);
+  await blockChainReads(page);
   await page.goto("/");
   await connect(page);
   await page.getByRole("button", { name: "Passer sur Base Sepolia" }).click();
@@ -240,12 +256,8 @@ test("connecting a real wallet does not populate leases or enable unimplemented 
   ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(
-    page.getByRole("heading", { name: "Baux indisponibles" }),
-  ).toBeVisible();
-  await expect(
     page.getByRole("button", { name: "Créer un bail", exact: true }),
-  ).toBeDisabled();
-  await expect(page.getByLabel("Solde indisponible")).toHaveText("—");
+  ).toBeEnabled();
   const requests = await page.evaluate(() => window.walletTest.requests);
   expect(
     requests.every(

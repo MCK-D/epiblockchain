@@ -35,3 +35,24 @@ export function validateClaimForm(
   if (Object.keys(errors).length > 0 || !values.claimHash) return { errors };
   return { args: [amount, values.claimHash] };
 }
+
+// Reprend la règle de resolve (InvalidSplit) : l'arbitre attribue au
+// propriétaire entre 0 et le montant contesté, le reste va au locataire.
+export function validateSplit(
+  toLandlordText: string,
+  claimAmount: bigint,
+): { toLandlord: bigint; error?: undefined } | { error: string } {
+  let toLandlord: bigint;
+  try {
+    toLandlord = parseEther(toLandlordText.trim().replace(",", "."));
+  } catch {
+    return { error: "Montant invalide." };
+  }
+  if (toLandlord < 0n) return { error: "Montant invalide." };
+  if (toLandlord > claimAmount)
+    return {
+      error:
+        "La part du propriétaire ne peut pas dépasser le montant contesté.",
+    };
+  return { toLandlord };
+}

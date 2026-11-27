@@ -1,5 +1,5 @@
 import { useReadContract, useReadContracts } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { appChain } from "../config/chain";
 import { rentalDepositAddress } from "../config/contract";
 import { rentalDepositAbi } from "../contracts/rentalDepositAbi";
 import type { Lease } from "../types/lease";
@@ -22,7 +22,7 @@ export function useLeases(): LeasesState {
     address,
     abi: rentalDepositAbi,
     functionName: "leaseCount",
-    chainId: baseSepolia.id,
+    chainId: appChain.id,
     query: { enabled: address !== undefined },
   });
 
@@ -39,7 +39,7 @@ export function useLeases(): LeasesState {
       abi: rentalDepositAbi,
       functionName: "getLease",
       args: [id],
-      chainId: baseSepolia.id,
+      chainId: appChain.id,
     })),
     query: { enabled: address !== undefined && ids.length > 0 },
   });

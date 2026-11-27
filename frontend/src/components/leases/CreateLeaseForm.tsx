@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { keccak256, parseEventLogs, type Hex } from "viem";
 import { useConnection } from "wagmi";
 import { simulateContract, writeContract } from "wagmi/actions";
-import { baseSepolia } from "wagmi/chains";
+import { appChain } from "../../config/chain";
 import { rentalDepositAddress } from "../../config/contract";
 import { rentalDepositAbi } from "../../contracts/rentalDepositAbi";
 import useAppContext from "../../contexts/AppContext";
@@ -67,7 +67,7 @@ export function CreateLeaseForm() {
         functionName: "createLease",
         args: result.args,
         account: address,
-        chainId: baseSepolia.id,
+        chainId: appChain.id,
       });
       return writeContract(config, request);
     });

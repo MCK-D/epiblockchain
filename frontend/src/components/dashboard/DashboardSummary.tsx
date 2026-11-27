@@ -1,6 +1,6 @@
 import { useBalance, useConnection, useReadContract } from "wagmi";
 import { simulateContract, writeContract } from "wagmi/actions";
-import { baseSepolia } from "wagmi/chains";
+import { appChain } from "../../config/chain";
 import { rentalDepositAddress } from "../../config/contract";
 import { rentalDepositAbi } from "../../contracts/rentalDepositAbi";
 import { useContractAction } from "../../hooks/useContractAction";
@@ -18,7 +18,7 @@ export function DashboardSummary() {
 
   const held = useBalance({
     address: contract,
-    chainId: baseSepolia.id,
+    chainId: appChain.id,
     query: { enabled: contract !== undefined },
   });
   const owed = useReadContract({
@@ -26,7 +26,7 @@ export function DashboardSummary() {
     abi: rentalDepositAbi,
     functionName: "balances",
     args: account ? [account] : undefined,
-    chainId: baseSepolia.id,
+    chainId: appChain.id,
     query: { enabled: contract !== undefined && account !== undefined },
   });
   const leases = useLeases();
@@ -48,7 +48,7 @@ export function DashboardSummary() {
         abi: rentalDepositAbi,
         functionName: "withdraw",
         account,
-        chainId: baseSepolia.id,
+        chainId: appChain.id,
       });
       return writeContract(config, request);
     });
@@ -56,7 +56,7 @@ export function DashboardSummary() {
   const canWithdraw =
     owed.data !== undefined &&
     owed.data > 0n &&
-    chainId === baseSepolia.id &&
+    chainId === appChain.id &&
     !action.busy;
 
   return (

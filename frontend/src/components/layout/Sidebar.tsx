@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { CircleHelp, House, LayoutDashboard, Leaf, Scale } from "lucide-react";
+import { appChain, isLocal } from "../../config/chain";
 import useAppContext from "../../contexts/AppContext";
 import type { Page } from "../../types/navigation";
 
@@ -52,7 +53,7 @@ export function Sidebar() {
           Comprendre Caution
         </button>
         <div className="network">
-          Base Sepolia <small>Testnet</small>
+          {appChain.name} <small>{isLocal ? "Secours local" : "Testnet"}</small>
         </div>
       </div>
     </aside>

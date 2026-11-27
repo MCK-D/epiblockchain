@@ -13,11 +13,13 @@ export type Windows = {
   arbitration: bigint;
 };
 
-// Actions de la partie 2 qu'une adresse peut lancer sur un bail.
+// Actions de fin de bail (parties 2 et 3) qu'une adresse peut lancer.
 export type EndOfLeaseAction =
   | "releaseAll"
   | "claim"
   | "acceptClaim"
+  | "dispute"
+  | "resolve"
   | "refundAfterTimeout"
   | "acceptAfterTimeout"
   | "resolveAfterTimeout";
@@ -47,6 +49,7 @@ export function availableActions(
   );
   const isLandlord = roles.includes("Propriétaire");
   const isTenant = roles.includes("Locataire");
+  const isArbiter = roles.includes("Arbitre");
   const actions: EndOfLeaseAction[] = [];
 
   if (lease.status === ACTIVE) {
@@ -57,10 +60,13 @@ export function availableActions(
   }
   if (lease.status === CLAIMED) {
     if (isTenant) actions.push("acceptClaim");
+    if (isTenant && now <= responseDeadline) actions.push("dispute");
     if (now > responseDeadline) actions.push("acceptAfterTimeout");
   }
-  if (lease.status === DISPUTED && now > arbitrationDeadline)
-    actions.push("resolveAfterTimeout");
+  if (lease.status === DISPUTED) {
+    if (isArbiter && now <= arbitrationDeadline) actions.push("resolve");
+    if (now > arbitrationDeadline) actions.push("resolveAfterTimeout");
+  }
 
   return actions;
 }

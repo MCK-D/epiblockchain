@@ -1,0 +1,54 @@
+name: CI
+
+# Runs every test on every push and pull request. No secret is needed: the
+# tests use Hardhat's simulated network, and the frontend's end-to-end tests
+# cut the page off from Base Sepolia.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    name: Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Tests (Solidity invariants and fuzzing, TypeScript)
+        run: npx hardhat test
+      - name: Tests against the deployed bytecode (optimizer on)
+        run: npx hardhat test --build-profile production
+      - name: Type check
+        run: npx tsc --noEmit
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Format
+        run: npm run format:check
+      - name: Type check and build
+        run: npm run build
+      - name: Unit tests
+        run: npm test
+      - name: End-to-end tests
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
