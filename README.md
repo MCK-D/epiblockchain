@@ -2,7 +2,7 @@
 
 Projet du module « Blockchain & Decentralised Applications » (EPITECH, sujet escrow). Le locataire bloque la caution dans un contrat que personne ne contrôle ; à la fin du bail, le propriétaire réclame tout ou partie de la caution sur justificatifs, et un arbitre désigné à la création tranche le montant contesté.
 
-**État actuel** : le contrat `contracts/RentalDeposit.sol` est complet : partie 1 (création, annulation, versement), partie 2 (restitution, réclamation, acceptation, les trois délais, retrait) et partie 3 (contestation, arbitrage), toutes testées, attaque par réentrance comprise. La connexion à un portefeuille navigateur est réelle (wagmi + viem) ; le frontend est relié à la partie 1 et affiche des états indisponibles pour le reste, sans exemples fictifs ni actions simulées.
+**État actuel** : le contrat `contracts/RentalDeposit.sol` est complet : partie 1 (création, annulation, versement), partie 2 (restitution, réclamation, acceptation, les trois délais, retrait) et partie 3 (contestation, arbitrage), toutes testées, attaque par réentrance comprise. Le frontend (wagmi + viem) appelle toutes les transitions du contrat déployé sur Base Sepolia, et peut viser un nœud local Hardhat en secours. Les tests (81 pour le contrat, dont des invariants et du fuzzing en Solidity ; 27 unitaires et 6 de bout en bout pour le frontend) tournent dans la CI à chaque push. Le scénario de la soutenance est dans [`DEMO.md`](DEMO.md).
 
 ## Fonctionnalité décentralisée
 
@@ -66,11 +66,13 @@ Tests qui couvrent les lignes « traité » (`test/RentalDeposit.ts`) :
 - **Contrôle d’accès** : chaque transition est testée avec chaque mauvais appelant.
 - **Délais** : chaque fenêtre est testée à la seconde près, sur sa dernière seconde et la suivante, ce qui vérifie qu’une action et son `...AfterTimeout` ne sont jamais possibles en même temps.
 - **Arbitre limité au montant contesté** : `resolve` est refusé sur un bail qui n’est pas en litige, et refusé s’il attribue au propriétaire plus que `claimAmount`.
+- **Invariants et fuzzing** (`contracts/RentalDeposit.t.sol`) : un handler enchaîne au hasard toutes les transitions sur plusieurs baux, avec du temps qui passe entre les appels. Après chaque séquence, l’ETH détenu par le contrat doit être exactement la somme des montants encore bloqués et des soldes crédités, et l’arbitre ne doit jamais être crédité. Créditer toute la caution au locataire lors d’une réclamation, au lieu de la part non réclamée, fait échouer l’invariant comptable.
 
 ## Organisation du dépôt
 
 ```text
-contracts/            contrats Solidity (et tests Solidity *.t.sol)
+contracts/            RentalDeposit.sol, ses tests d’invariants et de fuzzing (*.t.sol)
+contracts/test/       contrats d’attaque utilisés par les tests (réentrance, refus d’ETH)
 test/                 tests TypeScript (node:test + viem)
 ignition/modules/     modules de déploiement Hardhat Ignition
 ignition/parameters/  paramètres de déploiement (demo.json : délais de 2 minutes)
@@ -78,7 +80,9 @@ ignition/deployments/ adresses déployées par réseau (versionnées)
 scripts/              scripts lancés avec `npx hardhat run`
 hardhat.config.ts     compilateur, réseau baseSepolia, vérification
 frontend/             application React (projet npm séparé)
-docs/                 documentation (synchronisation du dépôt, design)
+docs/                 documentation (design, équipe, synchronisation du dépôt)
+DEMO.md               scénario exact de la soutenance, avec comptes et adresses
+.github/workflows/    ci.yml (tests à chaque push), synchronisation vers l’organisation
 ```
 
 Stack contrats : Hardhat 3 (template `node-test-runner-viem`), viem, Solidity 0.8.34, tests avec le test runner natif de Node, déploiement avec Ignition. Réseau cible : **Base Sepolia uniquement** (chain id 84532).
@@ -94,8 +98,11 @@ npm ci
 npx hardhat compile
 npx hardhat test                          # tests Solidity et TypeScript
 npx hardhat test nodejs test/RentalDeposit.ts   # un seul fichier de test TypeScript
-npx hardhat test solidity                 # tests Solidity uniquement
+npx hardhat test solidity                 # invariants et fuzzing uniquement
+npx hardhat test --build-profile production   # sur le bytecode déployé (optimiseur activé)
 ```
+
+La CI (`.github/workflows/ci.yml`) lance ces tests, puis ceux du frontend, à chaque push et à chaque pull request. Elle n’a besoin d’aucun secret.
 
 Le fichier `.npmrc` de la racine contient `allow-git=root` : npm 12 refuse par défaut les dépendances git, or `forge-std` (bibliothèque des tests Solidity) est installé depuis GitHub.
 
@@ -135,17 +142,25 @@ La connexion du portefeuille fonctionne sur **Base Sepolia (84532)** avec wagmi 
 
 Le menu affiche l’adresse réelle et le réseau, propose de passer sur Base Sepolia et permet la déconnexion. Les changements de compte et de réseau sont suivis par wagmi. La reconnexion dépend de l’autorisation conservée par l’extension.
 
-**Partie 1 reliée au contrat.** Le frontend lit les baux (`leaseCount`, puis `getLease` en un seul appel multicall) et affiche ceux où l’adresse connectée est propriétaire, locataire ou arbitre. Les rôles viennent des adresses enregistrées dans le contrat, jamais d’un sélecteur. Trois actions sont des transactions réelles, confirmées dans le portefeuille :
+**Toutes les transitions sont reliées au contrat.** Le frontend lit les baux (`leaseCount`, puis `getLease` en un seul appel multicall) et affiche ceux où l’adresse connectée est propriétaire, locataire ou arbitre. Les rôles viennent des adresses enregistrées dans le contrat, jamais d’un sélecteur. Chaque action est une transaction réelle, confirmée dans le portefeuille :
 
 - **Créer un bail** (propriétaire) : adresses du locataire et de l’arbitre, caution, date de fin, et le fichier du bail et de l’état des lieux d’entrée. Le fichier reste sur l’appareil : seule son empreinte keccak256 est envoyée (`leaseHash`). L’identifiant du bail créé est lu dans l’événement `LeaseCreated`.
 - **Verser la caution** (locataire) : le montant exact, après affichage de l’arbitre, de la caution et de la date de fin.
 - **Annuler le bail** (propriétaire), tant qu’il n’est pas financé.
+- **Rendre toute la caution** (propriétaire), à tout moment pendant le bail.
+- **Réclamer** (propriétaire), après la fin du bail et dans le délai : montant et fichier des justificatifs, dont seule l’empreinte est envoyée (`claimHash`). La part non réclamée est créditée au locataire dès la confirmation.
+- **Accepter** ou **contester** la réclamation (locataire), la contestation seulement dans le délai de réponse.
+- **Trancher le litige** (arbitre) : la part du montant contesté attribuée au propriétaire, le reste allant au locataire. La page « Arbitrage » liste les litiges dont l’adresse connectée est l’arbitre.
+- **Déclencher un délai expiré** (n’importe qui) : chaque bouton apparaît dès que l’échéance est passée, avec un compte à rebours sur la fiche du bail.
+- **Retirer** (tout bénéficiaire), depuis la vue d’ensemble, qui affiche aussi l’ETH détenu par le contrat et le nombre de baux en cours.
 
 Chaque transaction est simulée avant la signature : un refus du contrat est décodé et affiché avec sa raison (`NotTenant`, `EndDateInPast`…), sans frais. Une lecture qui échoue s’affiche comme un échec, jamais comme une liste vide ou un solde nul ; un tiret signifie « indisponible ».
 
 Tant que l’adresse du contrat n’est pas renseignée dans `frontend/src/config/contract.ts`, les baux sont indisponibles et la création est désactivée. Après un déploiement, recopier l’adresse depuis `ignition/deployments/chain-84532/deployed_addresses.json`. Si les signatures du contrat changent : `npx hardhat compile` à la racine, puis `npm run abi` dans `frontend/`.
 
-Les soldes, réclamations et litiges (parties 2 et 3) restent indisponibles. Aucun bail d’exemple, faux solde ou simulation de transaction n’est conservé dans le code applicatif.
+Aucun bail d’exemple, faux solde ou simulation de transaction n’est conservé dans le code applicatif.
+
+**Secours sur un nœud local.** Si Base Sepolia ne répond pas le jour de la soutenance, le même module Ignition est déployé sur un nœud Hardhat local et le frontend le vise avec `VITE_CHAIN=local` ; la chaîne active est choisie dans `frontend/src/config/chain.ts`. La procédure est dans [`DEMO.md`](DEMO.md).
 
 ## Organisation du frontend
 
@@ -154,17 +169,18 @@ frontend/src/
 ├── main.tsx             # WalletProvider puis AppContextProvider
 ├── App.tsx              # Assemblage des écrans et de l’aide
 ├── components/
-│   ├── dashboard/       # Indicateurs indisponibles jusqu’aux lectures du contrat
-│   ├── leases/          # État indisponible des baux et litiges
+│   ├── dashboard/       # ETH détenu, solde à retirer et retrait, baux en cours
+│   ├── leases/          # Liste, création, fiche du bail, fin de bail et arbitrage
 │   ├── layout/          # Navigation, en-tête et explication du projet
 │   ├── help/            # Fonctionnement prévu du contrat
 │   ├── wallet/          # Connexion réelle et gestion du portefeuille
 │   └── ui/              # Modale réutilisable
-├── config/              # Configuration wagmi sur Base Sepolia uniquement
+├── config/              # Chaîne active (Base Sepolia ou nœud local), wagmi, adresse
+├── hooks/               # Lectures des baux, délais du contrat, cycle d’une transaction
 ├── contexts/            # État d’interface : page, menu mobile et aide
 ├── providers/           # Providers wagmi et TanStack Query
 ├── types/               # Types de navigation
-├── utils/               # Messages d’erreur du portefeuille
+├── utils/               # Règles d’affichage des actions, validation, erreurs traduites
 └── styles/              # Thème, composants et responsive
 ```
 
@@ -184,4 +200,4 @@ npm run test:e2e
 
 Si Chromium est déjà installé : `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`.
 
-Les tests utilisent un portefeuille EIP-1193 simulé uniquement dans les fichiers de test, sans clé. Ils couvrent la connexion, les refus, les demandes en attente, les changements de compte et de réseau, la reconnexion, la déconnexion et l’absence de données fictives dans l’application. Une validation manuelle reste nécessaire pour les fenêtres propres à chaque extension.
+Les tests utilisent un portefeuille EIP-1193 simulé uniquement dans les fichiers de test, sans clé. Ils couvrent la connexion, les refus, les demandes en attente, les changements de compte et de réseau, la reconnexion, la déconnexion et l’absence de données fictives dans l’application. Les tests de bout en bout coupent l’accès à Base Sepolia : ils vérifient qu’une lecture en échec s’affiche comme un échec, sans dépendre du réseau. Les tests unitaires (`tests/deadlines.test.mjs`) vérifient quelles actions sont proposées selon le rôle, l’état du bail et l’heure, à la seconde près. Une validation manuelle reste nécessaire pour les fenêtres propres à chaque extension.
