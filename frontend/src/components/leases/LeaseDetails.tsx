@@ -9,9 +9,11 @@ import { contractErrorMessage } from "../../utils/contractErrors";
 import { formatDate, formatEth, statusLabel } from "../../utils/format";
 import { rolesOf } from "../../utils/leaseRoles";
 import type { Lease } from "../../types/lease";
+import { EndOfLeaseActions } from "./EndOfLeaseActions";
 import { TransactionStatus } from "./TransactionStatus";
 
 const PROPOSED = 0;
+const CANCELLED = 5;
 
 function Party({
   label,
@@ -160,11 +162,14 @@ export function LeaseDetails({ id }: { id: bigint }) {
         </button>
       )}
 
-      {!proposed && (
-        <p className="notice">
-          Les réclamations et litiges seront disponibles avec les prochaines
-          parties du contrat.
-        </p>
+      {!proposed && lease.status !== CANCELLED && (
+        <EndOfLeaseActions
+          contract={contract}
+          lease={lease}
+          roles={roles}
+          account={account}
+          onBaseSepolia={onBaseSepolia}
+        />
       )}
 
       <TransactionStatus
