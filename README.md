@@ -57,7 +57,7 @@ Chaque famille de failles vue au Day 3, appliquée à `RentalDeposit`.
 | `delegatecall`, proxy | non applicable | contrat immuable, sans proxy ni mise à jour, par choix : un contrat modifiable rendrait le pouvoir à un opérateur |
 | Horodatage (`block.timestamp`) | accepté | le séquenceur peut décaler l’horodatage de quelques secondes, négligeable face aux délais de production ; avec les délais de démonstration de 2 minutes, l’effet est visible et doit être présenté comme tel |
 | Choix de l’arbitre | accepté | désigné par le propriétaire ; le contrat interdit seulement qu’il soit le propriétaire ou le locataire. Le risque maximal pour le locataire est la perte du montant contesté, et il connaît l’arbitre avant de verser |
-| Côté utilisateur | à faire (frontend) | afficher l’arbitre, la caution exacte et la date de fin avant la signature de `fund`, et ne demander aucune signature que l’interface n’explique pas |
+| Côté utilisateur | traité | la fiche du bail affiche l’arbitre, la caution exacte et la date de fin avant la signature de `fund` ; chaque transaction correspond à un bouton explicite et est simulée avant la signature, donc un refus du contrat est expliqué sans frais |
 
 Tests qui couvrent les lignes « traité » (`test/RentalDeposit.ts`) :
 
