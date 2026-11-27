@@ -16,8 +16,8 @@ Les fonctions `dispute`, `resolve` et `resolveAfterTimeout`, ainsi que leurs éc
 
 | Tâche | Responsable |
 |---|---|
-| Renseigner le compte arbitre dans `DEMO.md`, financer les trois comptes, préparer les baux P1 et P2 la veille | à confirmer |
+| Renseigner le compte arbitre dans `DEMO.md`, financer les trois comptes, préparer les baux P1 et P2 la veille | vlinka (comptes propriétaire et locataire des répétitions) |
 | Répéter `DEMO.md` deux fois sur Base Sepolia, dont une fois la veille, depuis un profil de navigateur propre | les trois |
 | Séance où chacun explique sa partie aux deux autres, questions comprises | les trois |
-| Préparer la question « un protocole en production » : par exemple Kleros pour l’arbitrage, ce qu’il fait différemment et pourquoi | à confirmer |
-| Facultatif : historique d’un bail lu depuis les événements (non fait) | à confirmer |
+| Préparer la question « un protocole en production » : par exemple Kleros pour l’arbitrage, ce qu’il fait différemment et pourquoi | Micka Daoud (partie 3, arbitrage) |
+| Facultatif : historique d’un bail lu depuis les événements (non fait) | Micka Daoud (partie 3) |

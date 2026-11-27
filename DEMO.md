@@ -11,7 +11,7 @@ Séquence exacte jouée en direct, en 15 minutes, sur Base Sepolia. Elle montre 
 | Frontend | `cd frontend && npm ci && npm run dev`, puis http://localhost:5173 |
 | Propriétaire | `0x72A9C524C87555b5773f5E91084055e5d4356C1A` |
 | Locataire | `0xdbb1A0eaC7116cb06464c4BfC062CfA734d777f3` |
-| Arbitre | **à renseigner** : un troisième compte du même MetaMask, distinct des deux autres |
+| Arbitre | `0xC436AC46b8e4362091c7E2e9d8519FB588c8692c` |
 
 Les trois comptes sont des comptes du **même** MetaMask (menu des comptes, « Ajouter un compte ») : on passe de l’un à l’autre en un clic. L’arbitre ne signe qu’à l’étape 5.
 
