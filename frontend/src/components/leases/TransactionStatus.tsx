@@ -1,9 +1,8 @@
-import { baseSepolia } from "wagmi/chains";
+import { appChain } from "../../config/chain";
 import type { ActionState } from "../../hooks/useContractAction";
 
-function explorerLink(hash: string) {
-  return `${baseSepolia.blockExplorers.default.url}/tx/${hash}`;
-}
+// Le nœud local de secours n'a pas d'explorateur : pas de lien dans ce cas.
+const explorer = appChain.blockExplorers?.default;
 
 // Affiche l'étape en cours d'une transaction, ou sa raison d'échec.
 export function TransactionStatus({
@@ -27,9 +26,13 @@ export function TransactionStatus({
       {state.status === "pending" &&
         "Transaction envoyée, en attente d’un bloc… "}
       {state.status === "success" && `${success} `}
-      {state.status !== "wallet" && (
-        <a href={explorerLink(state.hash)} target="_blank" rel="noreferrer">
-          Voir sur Basescan
+      {state.status !== "wallet" && explorer && (
+        <a
+          href={`${explorer.url}/tx/${state.hash}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Voir sur {explorer.name}
         </a>
       )}
     </p>

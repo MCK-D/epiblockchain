@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useReadContracts } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { appChain } from "../config/chain";
 import { rentalDepositAddress } from "../config/contract";
 import { rentalDepositAbi } from "../contracts/rentalDepositAbi";
 import type { Windows } from "../utils/leaseDeadlines";
@@ -11,7 +11,7 @@ export function useWindows(): Windows | undefined {
   const contract = {
     address,
     abi: rentalDepositAbi,
-    chainId: baseSepolia.id,
+    chainId: appChain.id,
   } as const;
   const read = useReadContracts({
     contracts: [

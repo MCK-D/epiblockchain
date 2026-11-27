@@ -10,7 +10,7 @@ import {
   useSwitchChain,
   type Connector,
 } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { appChain, isLocal } from "../../config/chain";
 import { walletErrorMessage } from "../../utils/walletErrors";
 import { Modal } from "../ui/Modal";
 
@@ -58,7 +58,7 @@ export function WalletControls() {
   const connect = useConnect();
   const disconnect = useDisconnect();
   const switchChain = useSwitchChain();
-  const onBaseSepolia = connection.chainId === baseSepolia.id;
+  const onBaseSepolia = connection.chainId === appChain.id;
   const address = connection.address
     ? getAddress(connection.address)
     : undefined;
@@ -94,7 +94,7 @@ export function WalletControls() {
         disabled={reconnecting}
         title={
           address
-            ? `${address} · ${onBaseSepolia ? "Base Sepolia" : "Réseau non pris en charge"}`
+            ? `${address} · ${onBaseSepolia ? appChain.name : "Réseau non pris en charge"}`
             : undefined
         }
         aria-label={
@@ -133,27 +133,27 @@ export function WalletControls() {
                   <dt>Réseau</dt>
                   <dd>
                     {onBaseSepolia
-                      ? "Base Sepolia · testnet"
+                      ? `${appChain.name} · ${isLocal ? "secours local" : "testnet"}`
                       : `Réseau non pris en charge (ID ${connection.chainId ?? "inconnu"})`}
                   </dd>
                 </dl>
                 {!onBaseSepolia && (
                   <>
                     <p className="notice">
-                      Sélectionnez Base Sepolia pour continuer. Seul ce réseau
-                      de test est pris en charge.
+                      Sélectionnez {appChain.name} pour continuer. Seul ce
+                      réseau de test est pris en charge.
                     </p>
                     <button
                       className="primary"
                       disabled={busy}
                       onClick={() => {
                         connect.reset();
-                        switchChain.mutate({ chainId: baseSepolia.id });
+                        switchChain.mutate({ chainId: appChain.id });
                       }}
                     >
                       {switchChain.isPending
                         ? "Confirmez dans le portefeuille…"
-                        : "Passer sur Base Sepolia"}
+                        : `Passer sur ${appChain.name}`}
                     </button>
                   </>
                 )}

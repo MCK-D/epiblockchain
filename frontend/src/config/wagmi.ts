@@ -1,12 +1,14 @@
 import { createConfig, http } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { appChain, baseSepolia, hardhatLocal } from "./chain";
 import { injected } from "wagmi/connectors";
 
 export const wagmiConfig = createConfig({
-  chains: [baseSepolia],
+  chains: [appChain],
   connectors: [injected({ shimDisconnect: true })],
   multiInjectedProviderDiscovery: true,
-  transports: { [baseSepolia.id]: http() },
+  // Une seule chaîne est active (appChain) ; wagmi exige un transport pour
+  // chacune de celles que son type peut désigner.
+  transports: { [baseSepolia.id]: http(), [hardhatLocal.id]: http() },
   ssr: true,
 });
 

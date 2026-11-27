@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { useConnection } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { appChain } from "../../config/chain";
 import { rentalDepositAddress } from "../../config/contract";
 import useAppContext from "../../contexts/AppContext";
 
@@ -11,8 +11,8 @@ export function PageHeading() {
     ? "Le contrat n’est pas encore déployé"
     : !isConnected
       ? "Connectez votre portefeuille"
-      : chainId !== baseSepolia.id
-        ? "Passez sur Base Sepolia"
+      : chainId !== appChain.id
+        ? `Passez sur ${appChain.name}`
         : undefined;
   return (
     <div className="page-heading">

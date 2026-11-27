@@ -22,3 +22,6 @@ dist/
 # Local tool state
 .omc/
 .playwright-mcp/
+
+# Déploiement de secours sur le nœud local Hardhat : recréé à chaque démarrage
+ignition/deployments/chain-31337/

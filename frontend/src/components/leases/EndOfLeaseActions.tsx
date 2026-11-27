@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { keccak256, zeroHash, type Address, type Hex } from "viem";
 import { simulateContract, writeContract } from "wagmi/actions";
-import { baseSepolia } from "wagmi/chains";
+import { appChain } from "../../config/chain";
 import { rentalDepositAbi } from "../../contracts/rentalDepositAbi";
 import { useContractAction } from "../../hooks/useContractAction";
 import { useNow, useWindows } from "../../hooks/useLeaseTiming";
@@ -83,7 +83,7 @@ export function EndOfLeaseActions({
         functionName: "resolve",
         args: [lease.id, result.toLandlord],
         account,
-        chainId: baseSepolia.id,
+        chainId: appChain.id,
       });
       return writeContract(config, request);
     });
@@ -100,7 +100,7 @@ export function EndOfLeaseActions({
         functionName,
         args: [lease.id],
         account,
-        chainId: baseSepolia.id,
+        chainId: appChain.id,
       });
       return writeContract(config, request);
     });
@@ -131,7 +131,7 @@ export function EndOfLeaseActions({
         functionName: "claim",
         args: [lease.id, amount, claimHash],
         account,
-        chainId: baseSepolia.id,
+        chainId: appChain.id,
       });
       return writeContract(config, request);
     });
@@ -196,7 +196,9 @@ export function EndOfLeaseActions({
       )}
 
       {actions.length > 0 && !onBaseSepolia && (
-        <p className="notice">Passez sur Base Sepolia pour agir sur ce bail.</p>
+        <p className="notice">
+          Passez sur {appChain.name} pour agir sur ce bail.
+        </p>
       )}
 
       {can("claim") && (

@@ -1,6 +1,6 @@
 import { useConnection, useReadContract } from "wagmi";
 import { simulateContract, writeContract } from "wagmi/actions";
-import { baseSepolia } from "wagmi/chains";
+import { appChain } from "../../config/chain";
 import { getAddress, zeroHash, type Address } from "viem";
 import { rentalDepositAddress } from "../../config/contract";
 import { rentalDepositAbi } from "../../contracts/rentalDepositAbi";
@@ -43,7 +43,7 @@ export function LeaseDetails({ id }: { id: bigint }) {
     abi: rentalDepositAbi,
     functionName: "getLease",
     args: [id],
-    chainId: baseSepolia.id,
+    chainId: appChain.id,
     query: { enabled: contract !== undefined },
   });
   const action = useContractAction();
@@ -67,7 +67,7 @@ export function LeaseDetails({ id }: { id: bigint }) {
   const roles = rolesOf(lease, account);
   const isLandlord = roles.includes("Propriétaire");
   const isTenant = roles.includes("Locataire");
-  const onBaseSepolia = chainId === baseSepolia.id;
+  const onBaseSepolia = chainId === appChain.id;
   const proposed = lease.status === PROPOSED;
 
   const cancel = () =>
@@ -78,7 +78,7 @@ export function LeaseDetails({ id }: { id: bigint }) {
         functionName: "cancel",
         args: [id],
         account,
-        chainId: baseSepolia.id,
+        chainId: appChain.id,
       });
       return writeContract(config, request);
     });
@@ -93,7 +93,7 @@ export function LeaseDetails({ id }: { id: bigint }) {
         args: [id],
         value: lease.deposit,
         account,
-        chainId: baseSepolia.id,
+        chainId: appChain.id,
       });
       return writeContract(config, request);
     });
@@ -131,7 +131,9 @@ export function LeaseDetails({ id }: { id: bigint }) {
       </dl>
 
       {proposed && (isLandlord || isTenant) && !onBaseSepolia && (
-        <p className="notice">Passez sur Base Sepolia pour agir sur ce bail.</p>
+        <p className="notice">
+          Passez sur {appChain.name} pour agir sur ce bail.
+        </p>
       )}
 
       {proposed && isTenant && (
